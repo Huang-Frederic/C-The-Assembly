@@ -1,0 +1,8 @@
+https://www.youtube.com/watch?v=jUZZC9UXyFs&ab_channel=SonarSystems
+
+
+Dans le terminal, se mettre dans le dossier principal et effectuer la commande suivante :
+gcc -I src/include -L src/lib -o main main.c -lmingw32 -lSDL2main -lSDL2
+
+Puis exécuter le fichier créé (l'exécutable) :
+./main
