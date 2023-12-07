@@ -45,7 +45,6 @@ int main( int argc, char* args[] )
                 //Handle events on queue
                 while( SDL_PollEvent( &e ) != 0 )
                 {
-                    printf(e.type);
                     //User requests quit
                     if( e.type == SDL_QUIT )
                     {
