@@ -16,7 +16,7 @@ SDL_Window* gWindow = NULL;
 //The surface contained by the window
 SDL_Surface* gScreenSurface = NULL;
 //The image we will load and show on the screen
-SDL_Surface* gXOut = NULL;
+SDL_Surface* gHelloWorld = NULL;
 
 int main( int argc, char* args[] )
 {
@@ -34,31 +34,13 @@ int main( int argc, char* args[] )
         }
         else
         {
-            //Main loop flag
-            bool quit = false;
-
-            //Event handler
-            SDL_Event e;
-
-            //While application is running
-            while( !quit ){
-                //Handle events on queue
-                while( SDL_PollEvent( &e ) != 0 )
-                {
-                    printf(e.type);
-                    //User requests quit
-                    if( e.type == SDL_QUIT )
-                    {
-                        quit = true;
-                    }
-                }
-                //Apply the image
-                SDL_BlitSurface( gXOut, NULL, gScreenSurface, NULL );
-            
-                //Update the surface
-                SDL_UpdateWindowSurface( gWindow );
-            }
-        }   
+            //Apply the image
+            SDL_BlitSurface( gHelloWorld, NULL, gScreenSurface, NULL );
+            //Update the surface
+            SDL_UpdateWindowSurface( gWindow );
+            //Hack to get window to stay up
+            SDL_Event e; bool quit = false; while( quit == false ){ while( SDL_PollEvent( &e ) ){ if( e.type == SDL_QUIT ) quit = true; } }
+        }
     }
 
     //Free resources and close SDL
@@ -101,8 +83,8 @@ bool loadMedia(){
     bool success = true;
 
     //Load splash image
-    gXOut = SDL_LoadBMP( "maps/20MHA.bmp" );
-    if( gXOut== NULL )
+    gHelloWorld = SDL_LoadBMP( "maps/20MHA.bmp" );
+    if( gHelloWorld == NULL )
     {
         printf( "Unable to load image %s! SDL Error: %s\n", "maps/20MHA.bmp", SDL_GetError() );
         success = false;
@@ -114,8 +96,8 @@ bool loadMedia(){
 void close()
 {
     //Deallocate surface
-    SDL_FreeSurface( gXOut );
-    gXOut = NULL;
+    SDL_FreeSurface( gHelloWorld );
+    gHelloWorld = NULL;
 
     //Destroy window
     SDL_DestroyWindow( gWindow );
