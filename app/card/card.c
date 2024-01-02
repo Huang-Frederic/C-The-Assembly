@@ -45,25 +45,6 @@ int addCard(struct Card *c, char *path) {
 }
 
 
-int readCard(char *name) {
-    FILE *fp;
-    struct Card c;
-    char path[100];
-    getCardPath(name, path);
-    if (!checkCardPath(path)) {
-        printf("\nFile doesn't exist.");
-        return 0;
-    }
-    fp = fopen(path, "rb");
-    if (fp == NULL)
-        return 0;
-    fread(&c, sizeof(struct Card), 1, fp);
-    printCard(&c);
-    fclose(fp);
-    return 1;
-}
-
-
 void printCard(struct Card *c) {
     int i = 0;
     printf("\nName: %s | Energy Cost: %d | Description: %s", c->name, c->energyCost, c->description);
@@ -71,6 +52,28 @@ void printCard(struct Card *c) {
             printf("\nEffect %d | Id: %d | Value: %d", i, c->effects[i].id, c->effects[i].value);
             ++i;
         }       
+}
+
+
+int readCard(char *name) {
+    FILE *fp;
+    struct Card c;
+    char path[100];
+   
+    getCardPath(name, path);
+    if (!checkCardPath(path)) {
+        printf("\nFile doesn't exist.");
+        return 0;
     }
+
+    fp = fopen(path, "rb");
+    if (fp == NULL)
+        return 0;
+    
+    fread(&c, sizeof(struct Card), 1, fp);
+    printCard(&c);
+    fclose(fp);
+    return 1;
+}
 
 
