@@ -3,150 +3,79 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-// Init Functions
-bool init();
-bool loadMedia();
-void close();
-
-// Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-// The window we'll be rendering to
-SDL_Window *gWindow = NULL;
-// The surface contained by the window
-SDL_Surface *gScreenSurface = NULL;
-// The image we will load and show on the screen
-SDL_Surface *gXOut = NULL;
+#include "headers/map.h"
 
 int main(int argc, char *args[])
 {
     // Start up SDL and create window
-    if (!init())
-    {
-        printf("Failed to initialize!\n");
-    }
-    else
-    {
-        // Load media
-        if (!loadMedia())
-        {
-            printf("Failed to load media!\n");
-        }
-        else
-        {
-            // Main loop flag
-            bool quit = false;
+    init();
 
-            // Event handler
-            SDL_Event e;
+    // Load media
+    SDL_Surface *map_camp = loadMedia("map/map-camp.bmp", 5);
+    SDL_Surface *map_fight = loadMedia("map/map-fight.bmp", 5);
+    SDL_Surface *map_treasure = loadMedia("map/map-treasure.bmp", 5);
 
-            // While application is running
-            while (!quit)
+    // Main loop flag
+    bool quit = false;
+    // Event handler
+    SDL_Event e;
+
+    // While application is running
+    while (!quit)
+    {
+
+        // Calculate the x-coordinate for centering each map
+        int screenWidth = gScreenSurface->w;
+        int mapWidth = map_camp->w; // Assuming all maps have the same width
+
+        int totalMapsWidth = 3 * mapWidth + 2 * 20; // 20 pixels spacing between maps
+        int x_start = (screenWidth - totalMapsWidth) / 2;
+
+        // Handle events on queue
+        while (SDL_PollEvent(&e) != 0)
+        {
+            // User requests quit
+            if (e.type == SDL_QUIT)
             {
-                // Handle events on queue
-                while (SDL_PollEvent(&e) != 0)
+                quit = true;
+            }
+
+            if (e.type == SDL_MOUSEMOTION)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+
+                map_camp = isMouseInside(x, y, x_start, map_camp) ? loadMedia("map/map-camp.bmp", 6) : loadMedia("map/map-camp.bmp", 5);
+                isMouseInside(x, y, x_start, map_camp) ? printf("Camp\n") : 0;
+                map_fight = isMouseInside(x, y, x_start + mapWidth + 20, map_fight) ? loadMedia("map/map-fight.bmp", 6) : loadMedia("map/map-fight.bmp", 5);
+                isMouseInside(x, y, x_start + mapWidth + 20, map_fight) ? printf("Fight\n") : 0;
+                map_treasure = isMouseInside(x, y, x_start + 2 * (mapWidth + 20), map_treasure) ? loadMedia("map/map-treasure.bmp", 6) : loadMedia("map/map-treasure.bmp", 5);
+                isMouseInside(x, y, x_start + 2 * (mapWidth + 20), map_treasure) ? printf("Treasure\n") : 0;
+            }
+
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                if (SDL_BUTTON_LEFT == e.button.button)
                 {
-                    // User requests quit
-                    if (e.type == SDL_QUIT)
-                    {
-                        quit = true;
-                    }
-
-                    if (e.type == SDL_MOUSEMOTION)
-                    {
-                        int x, y;
-                        SDL_GetMouseState(&x, &y);
-
-                        printf("%d : %d\n", x, y);
-                    }
-
-                    if (e.type == SDL_MOUSEBUTTONDOWN)
-                    {
-                        if (SDL_BUTTON_LEFT == e.button.button)
-                        {
-                            printf("Left mouse button is down\n");
-                        }
-                        else if (SDL_BUTTON_RIGHT == e.button.button)
-                        {
-                            printf("Right mouse button is down\n");
-                        }
-                        else if (SDL_BUTTON_MIDDLE == e.button.button)
-                        {
-                            printf("Middle mouse button is down\n");
-                        }
-                    }
+                    printf("Left mouse button is down\n");
                 }
-                // Apply the image
-                SDL_BlitSurface(gXOut, NULL, gScreenSurface, NULL);
-
-                // Update the surface
-                SDL_UpdateWindowSurface(gWindow);
             }
         }
+
+        // Clear the screen
+        SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+
+        // Render maps at centered positions
+        renderMap(map_camp, x_start, (gScreenSurface->h - map_camp->h) / 2);
+        renderMap(map_fight, x_start + mapWidth + 20, (gScreenSurface->h - map_fight->h) / 2);
+        renderMap(map_treasure, x_start + 2 * (mapWidth + 20), (gScreenSurface->h - map_treasure->h) / 2);
+
+        // Update the surface
+        SDL_UpdateWindowSurface(gWindow);
     }
 
     // Free resources and close SDL
     close();
 
     return 0;
-}
-
-bool init()
-{
-    // Initialization flag
-    bool success = true;
-
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        success = false;
-    }
-    else
-    {
-        // Create window
-        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (gWindow == NULL)
-        {
-            printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-            success = false;
-        }
-        else
-        {
-            // Get window surface
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
-        }
-    }
-
-    return success;
-}
-
-bool loadMedia()
-{
-    // Loading success flag
-    bool success = true;
-
-    // Load splash image
-    gXOut = SDL_LoadBMP("map/map-camp.bmp");
-    if (gXOut == NULL)
-    {
-        printf("Unable to load image %s! SDL Error: %s\n", "map/map-camp.bmp", SDL_GetError());
-        success = false;
-    }
-
-    return success;
-}
-
-void close()
-{
-    // Deallocate surface
-    SDL_FreeSurface(gXOut);
-    gXOut = NULL;
-
-    // Destroy window
-    SDL_DestroyWindow(gWindow);
-    gWindow = NULL;
-
-    // Quit SDL subsystems
-    SDL_Quit();
 }
