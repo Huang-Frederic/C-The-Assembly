@@ -20,17 +20,16 @@ int main(int argc, char *args[])
     // Event handler
     SDL_Event e;
 
+    // Calculate the x-coordinate for centering each map
+    int screenWidth = gScreenSurface->w;
+    int mapWidth = map_camp->w; // Assuming all maps have the same width
+
+    int totalMapsWidth = 3 * mapWidth + 2 * 20; // 20 pixels spacing between maps
+    int x_start = (screenWidth - totalMapsWidth) / 2;
+
     // While application is running
     while (!quit)
     {
-
-        // Calculate the x-coordinate for centering each map
-        int screenWidth = gScreenSurface->w;
-        int mapWidth = map_camp->w; // Assuming all maps have the same width
-
-        int totalMapsWidth = 3 * mapWidth + 2 * 20; // 20 pixels spacing between maps
-        int x_start = (screenWidth - totalMapsWidth) / 2;
-
         // Handle events on queue
         while (SDL_PollEvent(&e) != 0)
         {
