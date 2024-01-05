@@ -2,6 +2,7 @@
 #include <SDL2\SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <SDL2\SDL_image.h>
 
 #include "headers/map.h"
 
@@ -14,6 +15,9 @@ int main(int argc, char *args[])
     SDL_Surface *map_camp = loadMedia("map/map-camp.bmp", 5);
     SDL_Surface *map_fight = loadMedia("map/map-fight.bmp", 5);
     SDL_Surface *map_treasure = loadMedia("map/map-treasure.bmp", 5);
+
+    int imgFlags = IMG_INIT_PNG;
+    SDL_Surface *mew = IMG_Load("map/Mew.png");
 
     // Main loop flag
     bool quit = false;
