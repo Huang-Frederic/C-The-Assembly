@@ -19,12 +19,16 @@ SDL_Surface *loadSurface(const char *path); // Remove the "std::" namespace qual
 SDL_Surface *gCurrentSurface = NULL;
 // The window renderer
 SDL_Renderer *renderer = NULL;
+TTF_Font *font = NULL;
 
 // Init Functions
 void init();
 SDL_Surface *loadMedia(char *path, int scale);
 void renderMap(SDL_Surface *map, int x, int y);
 bool isMouseInside(int mouseX, int mouseY, int x_start, SDL_Surface *map);
+bool loadFont();
+void renderText(SDL_Surface *surface, const char *text, int x, int y);
+void addSpaceBeforeUppercase(char *str);
 void close();
 
 void init()
@@ -36,6 +40,16 @@ void init()
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        close();
+    }
+    else if (TTF_Init() == -1)
+    {
+        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        close();
+    }
+    else if (!loadFont())
+    {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         close();
     }
     else
@@ -60,20 +74,23 @@ void init()
 
 SDL_Surface *loadMedia(char *path, int scale)
 {
-    char full_path[255] = "map/";
+    char full_path[255] = "data/maps/";
     strcat(full_path, path);
+    char ext[5] = ".png";
+    strcat(full_path, ext);
 
     // Load splash image
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
+        printf("%s\n", path);
         printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
         close();
     }
     // Set up alpha blending
-    SDL_SetSurfaceBlendMode(originalSurface, SDL_BLENDMODE_BLEND);
+    // SDL_SetSurfaceBlendMode(originalSurface, SDL_BLENDMODE_BLEND);
 
-    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_GetWindowPixelFormat(gWindow), 0);
+    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
 
     if (formattedSurface == NULL)
     {
@@ -86,8 +103,8 @@ SDL_Surface *loadMedia(char *path, int scale)
     int desiredHeight = formattedSurface->h * scale;
 
     // Create a new surface with the desired size
-    SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, desiredWidth, desiredHeight, formattedSurface->format->BitsPerPixel,
-                                                      formattedSurface->format->Rmask, formattedSurface->format->Gmask, formattedSurface->format->Bmask, formattedSurface->format->Amask);
+    SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXELFORMAT_RGBA32);
+
     if (scaledSurface == NULL)
     {
         printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
@@ -117,6 +134,56 @@ bool isMouseInside(int mouseX, int mouseY, int x_start, SDL_Surface *map)
     int map_height = map->h;
 
     return mouseX >= x_start && mouseX <= x_start + map->w && mouseY >= (screen_height - map_height) / 2 && mouseY <= (screen_height - map_height) / 2 + map_height;
+}
+
+bool loadFont()
+{
+    font = TTF_OpenFont("ARCADECLASSIC.TTF", 24);
+    if (font == NULL)
+    {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
+    }
+    return true;
+}
+
+void renderText(SDL_Surface *surface, const char *text, int x, int y)
+{
+    SDL_Color textColor = {255, 255, 255}; // White color
+
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
+    if (textSurface == NULL)
+    {
+        printf("Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Rect destRect = {x, y, textSurface->w, textSurface->h};
+    SDL_BlitSurface(textSurface, NULL, surface, &destRect);
+
+    SDL_FreeSurface(textSurface);
+}
+
+void addSpaceBeforeUppercase(char *str)
+{
+    char result[255];
+    int resultIndex = 0;
+
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (isupper(str[i]))
+        {
+            if (i > 0 && !isspace(str[i - 1]))
+            {
+                result[resultIndex++] = ' ';
+            }
+        }
+        result[resultIndex++] = str[i];
+    }
+
+    result[resultIndex] = '\0';
+
+    strcpy(str, result);
 }
 
 void close()

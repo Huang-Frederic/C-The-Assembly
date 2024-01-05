@@ -1,14 +1,14 @@
 #include "card/card.c"
 #include "monster/monster.c"
 
-void testCard() {
+void testCard()
+{
     // struct Effect effects[7] = {{0}};
-    
+
     // struct Card c;
 
     // initEffect(effects, 7);
-   
-   
+
     // addEffect(effects, 1, 6);
     // printf("%d", effects[0].id);
     // createCard(&c, "rayon", 1, "description", effects);
@@ -24,7 +24,8 @@ void testCard() {
     // readCard(name);
 }
 
-void testMonster() {
+int testMonster()
+{
     struct Monster m;
     createMonster(&m, "RAX", 70, 0, 0, 0, 0);
     char path[100];
@@ -34,15 +35,12 @@ void testMonster() {
         return 0;
     // return 1;
     printMonster(&m);
-    char *name = "test";
-    char name[20] = "RAX";
-    readMonster(name);
+    // char *name = "test";
+    // char name[20] = "RAX";
+    // readMonster(name);
 }
 
-int main(int argc, char * argv[]) {
-  
-
- 
-
-
+int main(int argc, char *argv[])
+{
+    testMonster();
 }

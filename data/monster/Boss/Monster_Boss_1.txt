@@ -1,0 +1,4 @@
+Monster_Boss_1
+hp
+skill_effect_1
+skill_effect_2
