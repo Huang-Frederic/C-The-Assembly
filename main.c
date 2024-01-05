@@ -79,6 +79,7 @@ bool loadMedia()
 
 void close()
 {
+
 	// Deallocate surface
 	SDL_FreeSurface(gHelloWorld);
 	gHelloWorld = NULL;
@@ -120,11 +121,11 @@ int main(int argc, char *args[])
 						quit = true;
 				}
 			}
+
+			// Free resources and close SDL
+			close();
+
+			return 0;
 		}
 	}
-
-	// Free resources and close SDL
-	close();
-
-	return 0;
 }
