@@ -1,5 +1,6 @@
 // Using SDL and standard IO
 #include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -39,8 +40,11 @@ void init()
     }
     else
     {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         // Create window
-        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        gWindow = SDL_CreateWindow("Slay The Assembly", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
         if (gWindow == NULL)
         {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -56,25 +60,45 @@ void init()
 
 SDL_Surface *loadMedia(char *path, int scale)
 {
+    char full_path[255] = "map/";
+    strcat(full_path, path);
+
     // Load splash image
-    SDL_Surface *originalSurface = SDL_LoadBMP(path);
+    SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        printf("Unable to load image %s! SDL Error: %s\n", path, SDL_GetError());
+        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        close();
+    }
+    // Set up alpha blending
+    SDL_SetSurfaceBlendMode(originalSurface, SDL_BLENDMODE_BLEND);
+
+    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_GetWindowPixelFormat(gWindow), 0);
+
+    if (formattedSurface == NULL)
+    {
+        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
         close();
     }
 
-    int desiredWidth = originalSurface->h * scale;
-    int desiredHeight = originalSurface->h * scale;
+    // Calculate the desired width and height based on the scale factor
+    int desiredWidth = formattedSurface->w * scale;
+    int desiredHeight = formattedSurface->h * scale;
 
-    // Scale the surface to the desired size
-    SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, desiredWidth, desiredHeight, originalSurface->format->BitsPerPixel,
-                                                      originalSurface->format->Rmask, originalSurface->format->Gmask, originalSurface->format->Bmask, originalSurface->format->Amask);
+    // Create a new surface with the desired size
+    SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, desiredWidth, desiredHeight, formattedSurface->format->BitsPerPixel,
+                                                      formattedSurface->format->Rmask, formattedSurface->format->Gmask, formattedSurface->format->Bmask, formattedSurface->format->Amask);
+    if (scaledSurface == NULL)
+    {
+        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
+        close();
+    }
 
-    SDL_BlitScaled(originalSurface, NULL, scaledSurface, NULL);
+    SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
 
     // Free the original surface as it is no longer needed
     SDL_FreeSurface(originalSurface);
+    SDL_FreeSurface(formattedSurface);
 
     return scaledSurface;
 }
@@ -98,6 +122,7 @@ bool isMouseInside(int mouseX, int mouseY, int x_start, SDL_Surface *map)
 void close()
 {
     // Deallocate surface
+    // LOOP FOR FREING ALL SURFACES
     SDL_FreeSurface(gXOut);
     gXOut = NULL;
 
