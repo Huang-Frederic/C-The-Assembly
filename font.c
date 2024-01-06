@@ -1,10 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+// Screen dimension constants
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 
 /*
 - x, y: upper left corner.
@@ -21,7 +24,7 @@ void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
     *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
-    rect->x = (WINDOW_WIDTH / 2) - surface->w / 2;
+    rect->x = (SCREEN_WIDTH / 2) - surface->w / 2;
     rect->y = y + 50;
     rect->w = surface->w;
     rect->h = surface->h;
@@ -32,9 +35,9 @@ void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
 int main(int argc, char **argv)
 {
     SDL_Event event;
+    SDL_Texture *texture1, *texture2, *texture3, *texture4;
     SDL_Rect rect1, rect2, rect3, rect4;
     SDL_Renderer *renderer;
-    SDL_Texture *texture1, *texture2, *texture3, *texture4;
     SDL_Window *window;
     char *fontPath = "american_captain.ttf";
 
@@ -42,7 +45,7 @@ int main(int argc, char **argv)
 
     /* Inint TTF. */
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window, &renderer);
     TTF_Init();
     TTF_Font *font = TTF_OpenFont(fontPath, 50);
 
@@ -80,10 +83,13 @@ int main(int argc, char **argv)
     }
 
     /* Deinit TTF. */
+
     SDL_DestroyTexture(texture1);
     SDL_DestroyTexture(texture2);
     SDL_DestroyTexture(texture3);
     SDL_DestroyTexture(texture4);
+
+    TTF_CloseFont(font);
     TTF_Quit();
 
     SDL_DestroyRenderer(renderer);
