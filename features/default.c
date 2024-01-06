@@ -17,7 +17,7 @@ void init()
         printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         close();
     }
-    else if (!loadFont())
+    else if (!loadFont(selectedFont))
     {
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         close();
@@ -39,9 +39,9 @@ void init()
     }
 }
 
-bool loadFont()
+bool loadFont(const char *selectedFont)
 {
-    font = TTF_OpenFont("ARCADECLASSIC.TTF", 24);
+    font = TTF_OpenFont(selectedFont, 24);
     if (font == NULL)
     {
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
