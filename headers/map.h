@@ -7,3 +7,4 @@ int generateMaps(int day, char map_choices[][20], char countries[][20], int map_
 bool isMouseInside(int mouseX, int mouseY, int x_start, SDL_Surface *map);
 void renderTextChosen(SDL_Surface *surface, const char *text, int x, int y);
 void addSpaceBeforeUppercase(char *str);
+int FadeEffect(int faded, int inOut);

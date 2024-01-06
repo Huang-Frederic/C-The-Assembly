@@ -3,10 +3,6 @@
 
 char *map(int day, char *background_image)
 {
-    //////////////////////////////////////////////
-    // Load background
-    SDL_Surface *background = loadMedia(background_image, 1);
-    //////////////////////////////////////////////
     srand(time(NULL));
     char map_choices[5][20] = {
         "Common",
@@ -18,7 +14,9 @@ char *map(int day, char *background_image)
     char countries[5][20] = {"France", "Germany", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
+    SDL_Surface *background = loadMedia(background_image, 1);
     SDL_Surface *maps[map_occurrence];
+    int faded = 0;
 
     //////////////////////////////////////////////
     // printf("map_occurrence: %d\n", map_occurrence);
@@ -27,10 +25,10 @@ char *map(int day, char *background_image)
     map_occurrence = generateMaps(day, map_choices, countries, map_occurrence, map_chosen, maps);
 
     //////////////////////////////////////////////
-    for (int i = 0; i < map_occurrence; i++)
-    {
-        // printf("Number %d : %s\n", i, map_chosen[i]);
-    }
+    // for (int i = 0; i < map_occurrence; i++)
+    // {
+    //     printf("Number %d : %s\n", i, map_chosen[i]);
+    // }
     //////////////////////////////////////////////
 
     int screenWidth = gScreenSurface->w;
@@ -47,9 +45,7 @@ char *map(int day, char *background_image)
 
     int x_start = (screenWidth - totalMapsWidth + spacing) / 2;
 
-    // Check if action has been performed
     bool end_loop = false;
-    // Event handler
     SDL_Event e;
 
     while (!end_loop)
@@ -92,8 +88,11 @@ char *map(int day, char *background_image)
                         {
                             char *returned_map = malloc(strlen(map_chosen[i]) + 1);
                             strcpy(returned_map, map_chosen[i]);
-                            return returned_map;
+
+                            FadeEffect(faded, 1);
+                            SDL_Delay(100);
                             end_loop = true;
+                            return returned_map;
                         }
                     }
                 }
@@ -103,10 +102,8 @@ char *map(int day, char *background_image)
         // Clear the screen
         SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
 
-        //////////////////////////////////////////////
         // Render background
         renderMap(background, 0, 0, 0, 0);
-        //////////////////////////////////////////////
 
         char dayText[50];
         sprintf(dayText, "Day %d", day);
@@ -151,6 +148,8 @@ char *map(int day, char *background_image)
             renderTextChosen(gScreenSurface, title_chosen[i], textX, textY);
         }
 
+        faded = FadeEffect(faded, 0);
+
         // Update the surface
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -171,8 +170,6 @@ SDL_Surface *loadMedia(char *path, int scale)
         printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
         close();
     }
-    // Set up alpha blending
-    // SDL_SetSurfaceBlendMode(originalSurface, SDL_BLENDMODE_BLEND);
 
     SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
 
@@ -182,11 +179,9 @@ SDL_Surface *loadMedia(char *path, int scale)
         close();
     }
 
-    // Calculate the desired width and height based on the scale factor
     int desiredWidth = formattedSurface->w * scale;
     int desiredHeight = formattedSurface->h * scale;
 
-    // Create a new surface with the desired size
     SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXELFORMAT_RGBA32);
 
     if (scaledSurface == NULL)
@@ -197,7 +192,6 @@ SDL_Surface *loadMedia(char *path, int scale)
 
     SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
 
-    // Free the original surface as it is no longer needed
     SDL_FreeSurface(originalSurface);
     SDL_FreeSurface(formattedSurface);
 
@@ -318,15 +312,73 @@ void addSpaceBeforeUppercase(char *str)
     {
         if (isupper(str[i]))
         {
-            if (i > 0 && !isspace(str[i - 1]))
-            {
-                result[resultIndex++] = ' ';
-            }
+            result[resultIndex] = ' ';
+            resultIndex++;
         }
-        result[resultIndex++] = str[i];
+        result[resultIndex] = str[i];
+        resultIndex++;
     }
 
     result[resultIndex] = '\0';
 
     strcpy(str, result);
+}
+
+int FadeEffect(int faded, int inOut)
+{
+    if (inOut == 0)
+    {
+        if (faded == 0)
+        {
+            SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
+            SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
+            int reduce = 4;
+            for (int alpha = 255; alpha > 0; alpha -= reduce)
+            {
+                // make a copy of gScreenSurface
+                SDL_SetSurfaceAlphaMod(screenCopy, 255);
+                SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+                // Render the semi-transparent black overlay on top
+                SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, alpha));
+                SDL_BlitSurface(overlay, NULL, gScreenSurface, NULL);
+
+                SDL_UpdateWindowSurface(gWindow);
+                SDL_Delay(20);
+
+                reduce = alpha > 150 ? 4 : 8;
+            }
+            SDL_FreeSurface(screenCopy);
+
+            return 1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    else if (inOut == 1)
+    {
+        SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
+        SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
+        int reduce = 5;
+        for (int alpha = 0; alpha < 255; alpha += reduce)
+        {
+            // make a copy of gScreenSurface
+            SDL_SetSurfaceAlphaMod(screenCopy, 255);
+            SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+            // Render the semi-transparent black overlay on top
+            SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, alpha));
+            SDL_BlitSurface(overlay, NULL, gScreenSurface, NULL);
+
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(20);
+
+            reduce = alpha < 150 ? 5 : 10;
+        }
+        SDL_FreeSurface(screenCopy);
+
+        return 0;
+    }
 }
