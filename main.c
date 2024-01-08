@@ -1,61 +1,49 @@
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdbool.h>
+#include "include/main.h"
+#include "feature/menu.c"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-int main(int argc, char *args[])
+bool createWindow()
 {
-    // The window we'll be rendering to
-    SDL_Window *window = NULL;
-
-    // The surface contained by the window
-    SDL_Surface *screenSurface = NULL;
-
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    Window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+    if (!Window)
     {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        printf("\nThere was a problem creating the window.");
+        return false;
     }
-    else
+    Renderer = SDL_CreateRenderer(Window, -1, 0);
+    if (!Renderer)
     {
-        // Create window
-        window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (window == NULL)
-        {
-            printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        }
-        else
-        {
-            // Get window surface
-            screenSurface = SDL_GetWindowSurface(window);
+        printf("\nThere was a problem creating the renderer.");
+        return false;
+    }
+    return true;
+}
 
-            // Fill the surface white
-            SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+bool loadMedia()
+{
 
-            // Update the surface
-            SDL_UpdateWindowSurface(window);
-
-            // Hack to get window to stay up
-            SDL_Event e;
-            bool quit = false;
-            while (quit == false)
-            {
-                while (SDL_PollEvent(&e))
-                {
-                    if (e.type == SDL_QUIT)
-                        quit = true;
-                }
-            }
-        }
+    // Load splash image
+    BackgroundImg = IMG_Load("resource/img/menu.jpg");
+    if (!BackgroundImg)
+    {
+        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.jpg", SDL_GetError());
+        return false;
     }
 
-    // Destroy window
-    SDL_DestroyWindow(window);
+    ImgTexture = SDL_CreateTextureFromSurface(Renderer, BackgroundImg);
+    if (!ImgTexture)
+    {
+        printf("\nUnable to create texture from surface.");
+        return false;
+    }
 
-    // Quit SDL subsystems
-    SDL_Quit();
+    return true;
+}
 
+int main(int argc, char *argv[])
+{
+    createWindow();
+    if (!displayMenu())
+        return 1;
+    clearMemory();
     return 0;
 }
