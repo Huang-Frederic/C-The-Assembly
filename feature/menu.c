@@ -1,29 +1,28 @@
-#include "headers/menu.h"
+#include "include/menu.h"
 
-void createWindow()
-{
-    Window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-    if (!Window)
-        printf("There was a problem creating the window.");
-    Renderer = SDL_CreateRenderer(Window, -1, 0);
-    if (!Renderer)
-        printf("There was a problem creating the renderer.");
-}
-
-void createText(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, SDL_Rect *TextRect, int y)
+bool createText(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, SDL_Rect *TextRect, int y)
 {
     TTF_Init();
     TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
     if (!font)
-        printf("Couldn't find/init open ttf font.");
+    {
+        printf("\nCouldn't find/init open ttf font.");
+        return false;
+    }
+
     TextSurface = TTF_RenderText_Solid(font, Message, TextColor);
     if (TextSurface == NULL)
     {
-        printf("Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
-        return;
+        printf("\nUnable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
     }
 
     *TextTexture = SDL_CreateTextureFromSurface(Renderer, TextSurface);
+    if (*TextTexture == NULL)
+    {
+        printf("\nUnable to create texture from surface!");
+        return false;
+    }
     TextRect->x = WINDOW_WIDTH / 2 - TextSurface->w / 2;
     TextRect->y = y + 100;
     TextRect->w = TextSurface->w;
@@ -31,6 +30,7 @@ void createText(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, S
     // After you create the texture you can release the surface memory allocation because we actually render the texture not the surface.
     SDL_FreeSurface(TextSurface);
     TTF_Quit();
+    return true;
 }
 
 bool isPollingEvent()
@@ -104,6 +104,35 @@ void render()
     SDL_Delay(10);               // Delay to prevent CPU overhead as suggested by the user `not2qubit`
 }
 
+bool createTexts()
+{
+    if (!createText("Nouvelle Partie", FONT_NORMAL, &TextTexture1, &TextRect1, 50))
+        return false;
+    if (!createText("Options", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h))
+        return false;
+    if (!createText("Scores", FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h))
+        return false;
+    if (!createText("Quitter", FONT_NORMAL, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h))
+        return false;
+    return true;
+}
+
+bool displayMenu()
+{
+    if (!loadMedia())
+    {
+        printf("\nFailed to load media!");
+        return false;
+    }
+
+    createTexts();
+    while (isPollingEvent())
+    {
+        render();
+    }
+    return true;
+}
+
 void clearMemory()
 {
     SDL_FreeSurface(BackgroundImg);
@@ -119,51 +148,4 @@ void clearMemory()
     SDL_DestroyWindow(Window);
     SDL_Quit();
     printf("\nClear proccess done.");
-}
-
-void createTexts()
-{
-    createText("Nouvelle Partie", FONT_NORMAL, &TextTexture1, &TextRect1, 50);
-    createText("Options", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h);
-    createText("Scores", FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h);
-    createText("Quitter", FONT_NORMAL, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h);
-}
-
-void displayMenu()
-{
-
-    if (!loadMedia())
-        printf("Failed to load media!\n");
-
-    createTexts();
-    while (isPollingEvent())
-    {
-        render();
-    }
-}
-
-bool loadMedia()
-{
-    // Loading success flag
-    bool success = true;
-
-    // Load splash image
-    BackgroundImg = IMG_Load("img/menu.jpg");
-    if (BackgroundImg == NULL)
-    {
-        printf("Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
-        success = false;
-    }
-
-    ImgTexture = SDL_CreateTextureFromSurface(Renderer, BackgroundImg);
-
-    return success;
-}
-
-int main(int argc, char *argv[])
-{
-    createWindow();
-    displayMenu();
-    clearMemory();
-    return EXIT_SUCCESS;
 }
