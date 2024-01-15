@@ -1,0 +1,5 @@
+Common_EX
+150 //HP
+card_1 // First skill
+card_2 // Second skill
+1 // Second skill cd

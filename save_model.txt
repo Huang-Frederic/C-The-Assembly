@@ -1,0 +1,15 @@
+10 // Deck Size
+1 // Day 
+300 // HP
+300 // MaxHP
+5 // MaxEnergy
+Card_EX
+Card_EX
+Card_EX
+Card_EX
+Card_EX
+Card_OX
+Card_OX
+Card_OX
+Card_OX
+Card_OX

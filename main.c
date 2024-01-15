@@ -9,18 +9,21 @@ TTF_Font *font = NULL;
 
 #include "features/default.c"
 #include "features/map.c"
+#include "features/combat.c"
 
 int main(int argc, char *args[])
 {
     init();
 
-    int day = 1;
-    for (; day < 100; day++)
-    {
-        printf("Day: %d\n", day);
-        char *selected_map = map(day, "background2");
-        printf("Selected: %s\n\n", selected_map);
-    }
+    // int day = 1;
+    // for (; day < 100; day++)
+    // {
+    //     printf("Day: %d\n", day);
+    //     char *selected_map = map(day, "background2");
+    //     printf("Selected: %s\n\n", selected_map);
+    // }
+    char *selected_map = "Elite_EX";
+    combat(selected_map);
 
     close();
     return 0;

@@ -1,0 +1,11 @@
+Card_EX
+1
+1
+description de la carte EX
+10
+0
+0
+0
+0
+5
+1

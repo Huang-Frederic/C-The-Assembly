@@ -8,6 +8,7 @@
 #include <time.h>
 #include <SDL2/SDL_ttf.h>
 #include <ctype.h>
+#include <string.h>
 
 // Screen dimension constants
 const int SCREEN_WIDTH = 1280;

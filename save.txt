@@ -1,0 +1,15 @@
+10
+1
+300
+300
+5
+Card_EX
+Card_EX
+Card_EX
+Card_EX
+Card_EX
+Card_OX
+Card_OX
+Card_OX
+Card_OX
+Card_OX
