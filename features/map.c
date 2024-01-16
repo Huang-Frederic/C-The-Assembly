@@ -107,8 +107,8 @@ char *map(int day, char *background_image)
 
         char dayText[50];
         sprintf(dayText, "Day %d", day);
-        renderText(gScreenSurface, dayText, 64, 2, 4.5);
-        renderText(gScreenSurface, "Please choose your next destination", 32, 2, 1.15);
+        renderMapText(gScreenSurface, dayText, 64, 2, 4.5);
+        renderMapText(gScreenSurface, "Please choose your next destination", 32, 2, 1.15);
 
         // Render maps at centered positions
         for (int i = 0; i < map_occurrence; i++)
@@ -252,7 +252,7 @@ void renderMap(SDL_Surface *map, int x, int y, int w, int h)
     SDL_BlitSurface(map, NULL, gScreenSurface, &destRect);
 }
 
-void renderText(SDL_Surface *surface, char *Text, int font_size, float width_divide, float height_divide)
+void renderMapText(SDL_Surface *surface, char *Text, int font_size, float width_divide, float height_divide)
 {
     // Increase the font size and set the text color
     TTF_SetFontStyle(font, TTF_STYLE_NORMAL);

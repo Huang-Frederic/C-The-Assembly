@@ -2,7 +2,7 @@ Card_EX
 1
 1
 description de la carte EX
-10
+50
 0
 0
 0

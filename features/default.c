@@ -17,7 +17,7 @@ void init()
         printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         close();
     }
-    else if (!loadFont(selectedFont))
+    else if (!loadFont(selectedFont, 24))
     {
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         close();
@@ -39,9 +39,9 @@ void init()
     }
 }
 
-bool loadFont(const char *selectedFont)
+bool loadFont(const char *selectedFont, int font_size)
 {
-    font = TTF_OpenFont(selectedFont, 24);
+    font = TTF_OpenFont(selectedFont, font_size);
     if (font == NULL)
     {
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());

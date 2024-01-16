@@ -15,7 +15,7 @@ int main(int argc, char *args[])
 {
     init();
 
-    // int day = 1;
+    int day = 1;
     // for (; day < 100; day++)
     // {
     //     printf("Day: %d\n", day);

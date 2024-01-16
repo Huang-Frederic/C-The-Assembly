@@ -1,4 +1,4 @@
-10
+15
 1
 300
 300
@@ -13,3 +13,8 @@ Card_OX
 Card_OX
 Card_OX
 Card_OX
+Card_IX
+Card_IX
+Card_IX
+Card_IX
+Card_IX
