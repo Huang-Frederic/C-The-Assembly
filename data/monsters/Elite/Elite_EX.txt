@@ -2,4 +2,6 @@ Elite_EX
 150
 Card_EX
 Card_OX
-1
+2
+Card_IX
+3
