@@ -26,7 +26,7 @@ int main(int argc, char *args[])
         }
         else
         {
-            combat(selected_map);
+            combat("BossChina");
         }
     }
 

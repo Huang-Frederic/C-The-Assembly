@@ -3,7 +3,7 @@
 
 char *map()
 {
-    char *background_image = "background2";
+    char *background_image = "Map";
     int day = get_save_day();
 
     srand(time(NULL));
@@ -17,7 +17,7 @@ char *map()
     char countries[5][20] = {"France", "Germany", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
-    SDL_Surface *background = loadMedia(background_image, 1);
+    SDL_Surface *background = load_Background_Media_Map(background_image);
     SDL_Surface *maps[map_occurrence];
     int faded = 0;
 
@@ -156,6 +156,56 @@ char *map()
         // Update the surface
         SDL_UpdateWindowSurface(gWindow);
     }
+}
+
+SDL_Surface *load_Background_Media_Map(char *background_image)
+{
+    char background_path[256] = "backgrounds/";
+    strcat(background_path, background_image);
+    return load_Pathed_Media_Map(background_path, 1);
+}
+
+SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
+{
+    char full_path[255] = "data/";
+    strcat(full_path, path);
+    char ext[5] = ".png";
+    strcat(full_path, ext);
+
+    // Load splash image
+    SDL_Surface *originalSurface = IMG_Load(full_path);
+    if (originalSurface == NULL)
+    {
+        printf("%s\n", path);
+        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        close();
+    }
+
+    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
+
+    if (formattedSurface == NULL)
+    {
+        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
+        close();
+    }
+
+    int desiredWidth = formattedSurface->w * scale;
+    int desiredHeight = formattedSurface->h * scale;
+
+    SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXELFORMAT_RGBA32);
+
+    if (scaledSurface == NULL)
+    {
+        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
+        close();
+    }
+
+    SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
+
+    SDL_FreeSurface(originalSurface);
+    SDL_FreeSurface(formattedSurface);
+
+    return scaledSurface;
 }
 
 SDL_Surface *loadMedia(char *path, int scale)

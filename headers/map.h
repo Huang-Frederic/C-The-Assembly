@@ -1,5 +1,7 @@
 // Init Functions
 char *map();
+SDL_Surface *load_Pathed_Media_Map(char *path, float scale);
+SDL_Surface *load_Background_Media_Map(char *background_image);
 SDL_Surface *loadMedia(char *path, int scale);
 void renderMap(SDL_Surface *map, int x, int y, int w, int h);
 void renderMapText(SDL_Surface *surface, char *Text, int font_size, float width_divide, float height_divide);
