@@ -1,8 +1,11 @@
 #include "../headers/include.h"
 #include "../headers/map.h"
 
-char *map(int day, char *background_image)
+char *map()
 {
+    char *background_image = "background2";
+    int day = get_save_day();
+
     srand(time(NULL));
     char map_choices[5][20] = {
         "Common",
@@ -381,4 +384,22 @@ int FadeEffect(int faded, int inOut)
 
         return 0;
     }
+}
+
+int get_save_day()
+{
+    FILE *save = fopen("save.txt", "r");
+    if (save == NULL)
+    {
+        printf("Error opening file save.txt for getting the day!\n");
+        close();
+    }
+    int day;
+    for (int i = 0; i < 2; i++)
+    {
+        fscanf(save, "%d", &day);
+    }
+    fclose(save);
+    printf("Day: %d\n", day);
+    return day;
 }

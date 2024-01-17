@@ -1,8 +1,10 @@
 15
-1
+13
+Hisshiden
+0
 300
 300
-5
+28
 Card_EX
 Card_EX
 Card_EX

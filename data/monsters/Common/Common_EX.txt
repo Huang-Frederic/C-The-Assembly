@@ -1,4 +1,0 @@
-Common_EX
-100 //HP
-card_1 // First skill
-card_2:2 // Second skill:cd

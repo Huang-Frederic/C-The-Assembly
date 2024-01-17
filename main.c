@@ -15,15 +15,20 @@ int main(int argc, char *args[])
 {
     init();
 
-    int day = 1;
-    // for (; day < 100; day++)
-    // {
-    //     printf("Day: %d\n", day);
-    //     char *selected_map = map(day, "background2");
-    //     printf("Selected: %s\n\n", selected_map);
-    // }
-    char *selected_map = "Elite_EX";
-    combat(selected_map);
+    while (1)
+    {
+        char *selected_map = map();
+        printf("Selected: %s\n\n", selected_map);
+        if (strcmp(selected_map, "Camp") == 0 || strcmp(selected_map, "Treasure") == 0)
+        {
+            printf("You have selected camp or treasure.\n\n");
+            close();
+        }
+        else
+        {
+            combat(selected_map);
+        }
+    }
 
     close();
     return 0;
