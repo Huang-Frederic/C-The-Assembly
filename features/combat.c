@@ -61,14 +61,7 @@ void combat(char *map)
                 int mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
 
-                if (is_in_rect(mouseX, mouseY, endTurnButtonRect))
-                {
-                    end_button_color = 1;
-                }
-                else
-                {
-                    end_button_color = 0;
-                }
+                end_button_color = is_in_rect(mouseX, mouseY, endTurnButtonRect) ? 1 : 0;
 
                 for (int i = 0; i < cardsToDisplay; ++i)
                 {
@@ -99,7 +92,7 @@ void combat(char *map)
                     {
                         if (player_action(&player, &monster, player.Deck[CurrentCardIndices[i]], player_surface, monster_surface, copiedSurface))
                         {
-                            // remove the card
+                            // clear PollEvent
                             while (SDL_PollEvent(&e) != 0)
                             {
                             }
@@ -167,14 +160,7 @@ void combat(char *map)
         }
     }
 
-    if (combat_win == 1)
-    {
-        combat_won();
-    }
-    else
-    {
-        combat_lost();
-    }
+    combat_win == 1 ? combat_won() : combat_lost();
 }
 
 struct Player get_player()
@@ -562,8 +548,23 @@ void display_cards(struct Player player, SDL_Rect cardDisplayRects[], int cardsT
         for (int i = 0; i < cardsToDisplay; ++i)
         {
             CurrentCardIndices[i] = rand() % player.Deck_size;
-            struct Card randomCard = player.Deck[CurrentCardIndices[i]];
-            renderCard(randomCard, cardDisplayRects[i].x, cardDisplayRects[i].y, 0.25);
+            int isTheSame = 0;
+            for (int j = 0; j < cardsToDisplay; j++)
+            {
+                if (CurrentCardIndices[i] == CurrentCardIndices[j] && i != j)
+                {
+                    isTheSame = 1;
+                }
+            }
+            if (isTheSame == 1)
+            {
+                --i;
+            }
+            else
+            {
+                struct Card randomCard = player.Deck[CurrentCardIndices[i]];
+                renderCard(randomCard, cardDisplayRects[i].x, cardDisplayRects[i].y, 0.25);
+            }
         }
     }
     else if (CurrentCardIndices[0] != -1)
@@ -573,7 +574,6 @@ void display_cards(struct Player player, SDL_Rect cardDisplayRects[], int cardsT
             if (hoveredCardIndex == i)
             {
                 renderCard(player.Deck[CurrentCardIndices[i]], cardDisplayRects[i].x, cardDisplayRects[i].y - 50, 0.25);
-
                 renderCard(player.Deck[CurrentCardIndices[i]], 10, gScreenSurface->h / 4 - 30, 0.35);
             }
             else
@@ -1032,19 +1032,23 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
 
 void combat_won()
 {
-    // TODO
+    // TODO Récompenses
     printf("YOU WON\n");
     close();
 }
 
 void combat_lost()
 {
-    // TODO
+    // TODO Score
     printf("YOU LOST\n");
     close();
 }
 
-// Combat Lost -> Si on perd affiche le score et renvoi au menu
-// Combat Won -> Si on gagne offre les récompenses et sauvegarde
-// Fade in fade out de la scene de combat
+// Combat Lost -> Si on perd affiche le score et renvoi au menu et ensuite supprimer la save
+// Combat Won -> Si on gagne offre les récompenses (1:HP, 2:Carte, 3:Carte/Energy) et sauvegarde (update le score, applique les récompenses), passe a la prochaine map
+// Fade in fade out de la scene de combat (Affiche le message de Curl avant de fade in)
 // Background qui varie en fonction du pays
+// Gérer la difficulté, ajouter dans save la difficuté, qui sera écrite dans la save, PV +20%, Buff ATK, Buff Dodge au début de partie.
+// Faire un guide au lancement de la partie
+
+// Changer les trucs et commecner à mettre de vrais cartes/monstres

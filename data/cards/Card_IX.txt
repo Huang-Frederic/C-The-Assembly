@@ -2,7 +2,7 @@ Card_IX
 3
 3
 description de la carte
-10
+30
 0
 0
 0
