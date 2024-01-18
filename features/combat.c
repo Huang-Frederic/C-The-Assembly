@@ -56,7 +56,7 @@ void combat(char *map)
             if (e.type == SDL_QUIT)
             {
                 printf("\n\nQuiting ...\n\n");
-                close();
+                close_SDL();
             }
             if (e.type == SDL_MOUSEMOTION)
             {
@@ -184,7 +184,7 @@ struct Player get_player()
     if (save == NULL)
     {
         printf("An error while opening save.txt have occured!\n");
-        close();
+        close_SDL();
     }
 
     // Set all informations except Deck
@@ -232,23 +232,23 @@ struct Monster get_monster(char *map, struct Player *player)
     char token[30];
     if (strstr(map, "Elite") != NULL)
     {
-        strcpy(token, "Elite/");
+        strcpy(token, "elite/");
         strcpy(monster.class, "Elite");
     }
     else if (strstr(map, "Common") != NULL)
     {
-        strcpy(token, "Common/");
+        strcpy(token, "common/");
         strcpy(monster.class, "Common");
     }
     else if (strstr(map, "Boss") != NULL)
     {
-        strcpy(token, "Boss/");
+        strcpy(token, "boss/");
         strcpy(monster.class, "Boss");
     }
     else
     {
         printf("An error occured with the Syntax of the monster Name!\n");
-        close();
+        close_SDL();
     }
 
     char monster_name[50];
@@ -263,7 +263,7 @@ struct Monster get_monster(char *map, struct Player *player)
     if (monster_file == NULL)
     {
         printf("An error while opening monster_file.txt have occured!\n");
-        close();
+        close_SDL();
     }
     else
     {
@@ -288,6 +288,7 @@ struct Monster get_monster(char *map, struct Player *player)
             monster.strength = 3;
             monster.dodge = 3;
         }
+        monster.health += monster.health * (0.05 * player->day);
         monster.maxHealth = monster.health;
 
         char first_skill[30];
@@ -347,7 +348,7 @@ struct Card get_card(char card_name[30])
     if (card_file == NULL)
     {
         printf("An error while opening %s have occured!\n", card_name);
-        close();
+        close_SDL();
     }
 
     for (int i = 0; i < 9; i++)
@@ -385,7 +386,7 @@ char *get_country(char *map)
     if (country == NULL)
     {
         printf("An error occured with the Syntax of the map Name!\n");
-        close();
+        close_SDL();
     }
 
     return country;
@@ -404,7 +405,7 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
     {
         printf("%s\n", path);
         printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
@@ -412,7 +413,7 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
     if (formattedSurface == NULL)
     {
         printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     int desiredWidth = formattedSurface->w * scale;
@@ -423,7 +424,7 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
     if (scaledSurface == NULL)
     {
         printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
@@ -439,7 +440,7 @@ SDL_Surface *load_Monster_Media(struct Monster monster, char *map)
     char country[20];
     char monster_path[256] = "monsters/";
     strcat(monster_path, monster.class);
-    strcat(monster_path, "/Sprites/");
+    strcat(monster_path, "/sprites/");
     strcat(monster_path, map);
     return load_Pathed_Media(monster_path, 4);
 }
@@ -541,10 +542,10 @@ void display_difficulty(struct Player player)
     if (difficultyImage == NULL)
     {
         printf("Failed to load difficulty image!\n");
-        close();
+        close_SDL();
     }
 
-    renderMap(difficultyImage, 200, gScreenSurface->h - 70, 0, 0);
+    renderMap(difficultyImage, 210, gScreenSurface->h - 70, 0, 0);
 }
 
 void renderStatus(const char *text, int value, int x)
@@ -556,7 +557,7 @@ void renderStatus(const char *text, int value, int x)
     if (statusImage == NULL)
     {
         printf("Failed to load status image: %s\n", full_path);
-        close();
+        close_SDL();
     }
 
     char valueString[5];
@@ -605,8 +606,7 @@ void display_energy_bar(struct Player player)
             energy_height_temp -= 30;
             j = 0;
         }
-        SDL_Rect orbRect = {20 + j * (orbSize + spacing), gScreenSurface->h - energy_height_temp, orbSize, orbSize};
-        SDL_FillRect(gScreenSurface, &orbRect, SDL_MapRGB(gScreenSurface->format, 0, 0, 255)); // Blue color
+        renderMap(load_Pathed_Media("others/mana", 0.15), 20 + j * (orbSize + spacing), gScreenSurface->h - energy_height_temp, orbSize, orbSize);
         j++;
     }
 
@@ -618,8 +618,8 @@ void display_energy_bar(struct Player player)
             energy_height_temp -= 30;
             j = 0;
         }
-        SDL_Rect orbRect = {20 + j * (orbSize + spacing), gScreenSurface->h - energy_height_temp, orbSize, orbSize};
-        SDL_FillRect(gScreenSurface, &orbRect, SDL_MapRGB(gScreenSurface->format, 128, 128, 128)); // Grey color
+        renderMap(load_Pathed_Media("others/nomana", 0.15), 20 + j * (orbSize + spacing), gScreenSurface->h - energy_height_temp, orbSize, orbSize);
+
         j++;
     }
 
@@ -718,13 +718,13 @@ void initializeCardDisplayRects(SDL_Rect cardDisplayRects[], int cardsToDisplay)
 void renderCard(struct Card card, int x, int y, float scale)
 {
     char imagePath[100];
-    sprintf(imagePath, "cards/Sprites/%s", card.name);
+    sprintf(imagePath, "cards/sprites/%s", card.name);
 
     SDL_Surface *cardImage = load_Pathed_Media(imagePath, scale);
     if (cardImage == NULL)
     {
         printf("Failed to load card image: %s\n", imagePath);
-        close();
+        close_SDL();
     }
 
     SDL_Rect destRect = {x, y, cardImage->w, cardImage->h};
@@ -774,7 +774,6 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
         {
             if (monster->dodge > 0)
             {
-                srand(time(NULL));
                 int dodge = rand() % 100;
                 switch (dodge)
                 {
@@ -1029,7 +1028,7 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
             break;
         default:
             printf("No animation\n");
-            close();
+            close_SDL();
             break;
         }
     }
@@ -1091,7 +1090,7 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
             break;
         default:
             printf("No animation\n");
-            close();
+            close_SDL();
             break;
         }
     }
@@ -1103,13 +1102,13 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
     for (int i = 0; i < cardsToDisplay; ++i)
     {
         char imagePath[100];
-        sprintf(imagePath, "cards/Sprites/%s", player.Deck[CurrentCardIndices[i]].name);
+        sprintf(imagePath, "cards/sprites/%s", player.Deck[CurrentCardIndices[i]].name);
 
         cardImages[i] = load_Pathed_Media(imagePath, 0.25);
         if (cardImages[i] == NULL)
         {
             printf("Failed to load card image: %s\n", imagePath);
-            close();
+            close_SDL();
         }
     }
 
@@ -1226,8 +1225,9 @@ void combat_lost()
     printf("YOU LOST\n");
     FadeEffect(0, 1);
     SDL_Delay(1000);
-    close();
+    close_SDL();
 }
 
 // Combat Lost -> Si on perd affiche le score et renvoi au menu et ensuite supprimer la save
-// Combat Won -> Si on gagne offre les récompenses (1:HP, 2:Carte, 3:Carte/Energy) et sauvegarde (update le score, applique les récompenses, ajoute 1 jour), passe a la prochaine map
+// Combat Won -> RECOMPENSE Si on gagne offre les récompenses (1:HP, 2:Carte, 3:Carte/Energy) et sauvegarde (update le score, applique les récompenses, ajoute 1 jour), passe a la prochaine map
+// Add new cards

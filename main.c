@@ -10,6 +10,7 @@ TTF_Font *font = NULL;
 #include "features/default.c"
 #include "features/map.c"
 #include "features/combat.c"
+#include "features/event.c"
 
 int main(int argc, char *args[])
 {
@@ -19,17 +20,9 @@ int main(int argc, char *args[])
     {
         char *selected_map = map();
         printf("Selected: %s\n\n", selected_map);
-        if (strcmp(selected_map, "Camp") == 0 || strcmp(selected_map, "Treasure") == 0)
-        {
-            printf("You have selected camp or treasure.\n\n");
-            close();
-        }
-        else
-        {
-            combat("BossChina");
-        }
+        event(selected_map);
     }
 
-    close();
+    close_SDL();
     return 0;
 }

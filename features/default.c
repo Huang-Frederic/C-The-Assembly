@@ -10,17 +10,17 @@ void init()
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
     else if (TTF_Init() == -1)
     {
         printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-        close();
+        close_SDL();
     }
     else if (!loadFont(selectedFont, 24))
     {
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-        close();
+        close_SDL();
     }
     else
     {
@@ -29,7 +29,7 @@ void init()
         if (gWindow == NULL)
         {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-            close();
+            close_SDL();
         }
         else
         {
@@ -50,7 +50,7 @@ bool loadFont(const char *selectedFont, int font_size)
     return true;
 }
 
-void close()
+void close_SDL()
 {
     // Destroy window
     SDL_DestroyWindow(gWindow);

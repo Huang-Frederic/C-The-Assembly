@@ -10,6 +10,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#include <dirent.h>
+#include <unistd.h>
 
 // Screen dimension constants
 const int SCREEN_WIDTH = 1280;

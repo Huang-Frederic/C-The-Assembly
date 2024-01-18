@@ -1,17 +1,10 @@
-10 // Deck Size
-1 // Day 
-Player //Player name
-0 // Difficulty (-1 = EASY, 0 = NORMAL, 1 = HARD)
-300 // HP
-300 // MaxHP
-5 // MaxEnergy = 28
-Card_EX
-Card_EX
-Card_EX
-Card_EX
-Card_EX
-Card_OX
-Card_OX
-Card_OX
-Card_OX
-Card_OX
+// Deck Size
+// Day 
+//Player name
+// Difficulty (-1 = EASY, 0 = NORMAL, 1 = HARD)
+// HP
+// MaxHP
+// MaxEnergy = 28
+Card_1
+Card_2
+...

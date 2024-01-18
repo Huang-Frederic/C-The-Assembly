@@ -21,18 +21,7 @@ char *map()
     SDL_Surface *maps[map_occurrence];
     int faded = 0;
 
-    //////////////////////////////////////////////
-    // printf("map_occurrence: %d\n", map_occurrence);
-    //////////////////////////////////////////////
-
     map_occurrence = generateMaps(day, map_choices, countries, map_occurrence, map_chosen, maps);
-
-    //////////////////////////////////////////////
-    // for (int i = 0; i < map_occurrence; i++)
-    // {
-    //     printf("Number %d : %s\n", i, map_chosen[i]);
-    // }
-    //////////////////////////////////////////////
 
     int screenWidth = gScreenSurface->w;
     int totalMapsWidth = 0;
@@ -60,7 +49,7 @@ char *map()
             if (e.type == SDL_QUIT)
             {
                 printf("\n\nQuiting ...\n\n");
-                close();
+                close_SDL();
             }
 
             if (e.type == SDL_MOUSEMOTION)
@@ -178,7 +167,7 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     {
         printf("%s\n", path);
         printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
@@ -186,7 +175,7 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     if (formattedSurface == NULL)
     {
         printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     int desiredWidth = formattedSurface->w * scale;
@@ -197,7 +186,7 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     if (scaledSurface == NULL)
     {
         printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
@@ -221,7 +210,7 @@ SDL_Surface *loadMedia(char *path, int scale)
     {
         printf("%s\n", path);
         printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
@@ -229,7 +218,7 @@ SDL_Surface *loadMedia(char *path, int scale)
     if (formattedSurface == NULL)
     {
         printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     int desiredWidth = formattedSurface->w * scale;
@@ -240,7 +229,7 @@ SDL_Surface *loadMedia(char *path, int scale)
     if (scaledSurface == NULL)
     {
         printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
-        close();
+        close_SDL();
     }
 
     SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
@@ -442,7 +431,7 @@ int get_save_day()
     if (save == NULL)
     {
         printf("Error opening file save.txt for getting the day!\n");
-        close();
+        close_SDL();
     }
     int day;
     for (int i = 0; i < 2; i++)
