@@ -1,4 +1,4 @@
-#include "database.h"
+#include "../include/database.h"
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
