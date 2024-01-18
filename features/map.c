@@ -14,7 +14,7 @@ char *map()
         "Camp",
         "Boss",
     };
-    char countries[5][20] = {"France", "Germany", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
     SDL_Surface *background = load_Background_Media_Map(background_image);
@@ -28,14 +28,14 @@ char *map()
 
     // Assuming all maps have the same width
     int mapWidth = maps[0]->w;
-    int spacing = 40; // 40 pixels
+    int spacing = 100; // 40 pixels
 
     for (int i = 0; i < map_occurrence; i++)
     {
         totalMapsWidth += mapWidth + spacing;
     }
 
-    int x_start = (screenWidth - totalMapsWidth + spacing) / 2;
+    int x_start = (screenWidth - totalMapsWidth) / 2 + spacing / 2;
 
     bool end_loop = false;
     SDL_Event e;
@@ -52,31 +52,15 @@ char *map()
                 close_SDL();
             }
 
-            if (e.type == SDL_MOUSEMOTION)
-            {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-
-                for (int i = 0; i < map_occurrence; i++)
-                {
-                    maps[i] = isMouseInside(x, y, x_start + i * (mapWidth + 40), maps[i]) ? loadMedia(map_chosen[i], 6) : loadMedia(map_chosen[i], 5);
-                    // isMouseInside(x, y, x_start + i * (mapWidth + 40), maps[i]) ? printf("%s\n", map_chosen[i]) : 0;
-                }
-            }
-
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 if (SDL_BUTTON_LEFT == e.button.button)
                 {
-                    //////////////////////////////////////////////
-                    // printf("Left mouse button is down\n");
-                    //////////////////////////////////////////////
-
                     int x, y;
                     SDL_GetMouseState(&x, &y);
                     for (int i = 0; i < map_occurrence; i++)
                     {
-                        if (isMouseInside(x, y, x_start + i * (mapWidth + 40), maps[i]))
+                        if (isMouseInside(x, y, x_start + i * (spacing + maps[i]->w), maps[i]))
                         {
                             char *returned_map = malloc(strlen(map_chosen[i]) + 1);
                             strcpy(returned_map, map_chosen[i]);
@@ -105,25 +89,11 @@ char *map()
         // Render maps at centered positions
         for (int i = 0; i < map_occurrence; i++)
         {
-            int mapX = x_start + i * (mapWidth + 40);
+            int mapX = x_start + i * (spacing + maps[i]->w);
             int mapY = (gScreenSurface->h - maps[i]->h) / 2;
 
             int x, y;
             SDL_GetMouseState(&x, &y);
-
-            // Check if the mouse is inside the map area
-            if (isMouseInside(x, y, mapX, maps[i]))
-            {
-                // Render hover map
-                int hoverMapY = gScreenSurface->h - (gScreenSurface->h - mapY) - maps[i]->h / 8;
-                int hoverMapX = mapX + (mapWidth - maps[i]->w) / 2;
-                renderMap(maps[i], hoverMapX, hoverMapY, 0, 0);
-            }
-            else
-            {
-                // Render normal map
-                renderMap(maps[i], mapX, mapY, 0, 0);
-            }
 
             // Render text below the map (centered)
             int textWidth, textHeight;
@@ -134,10 +104,22 @@ char *map()
             strcpy(title_chosen[i], map_chosen[i]);
             addSpaceBeforeUppercase(title_chosen[i]);
 
-            int textX = mapX + (mapWidth - textWidth) / 2;
+            int textX = mapX + (maps[i]->w - textWidth) / 2;
             int textY = mapY + maps[i]->h + 20;
 
-            renderTextChosen(gScreenSurface, title_chosen[i], textX, textY);
+            // Check if the mouse is inside the map area
+            if (isMouseInside(x, y, mapX, maps[i]))
+            {
+                // Render hover map
+                renderMap(maps[i], mapX + 10, mapY - 10, 0, 0);
+                renderTextChosen(gScreenSurface, title_chosen[i], textX, textY + 10);
+            }
+            else
+            {
+                // Render normal map
+                renderMap(maps[i], mapX + 10, mapY, 0, 0);
+                renderTextChosen(gScreenSurface, title_chosen[i], textX, textY);
+            }
         }
 
         faded = FadeEffect(faded, 0);
@@ -197,7 +179,7 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     return scaledSurface;
 }
 
-SDL_Surface *loadMedia(char *path, int scale)
+SDL_Surface *loadMedia(char *path, float scale)
 {
     char full_path[255] = "data/maps/";
     strcat(full_path, path);
@@ -283,7 +265,7 @@ int generateMaps(int day, char map_choices[][20], char countries[][20], int map_
             }
         }
 
-        maps[i] = loadMedia(map_chosen[i], 5);
+        maps[i] = loadMedia(map_chosen[i], 0.8);
     }
     return map_occurrence;
 }

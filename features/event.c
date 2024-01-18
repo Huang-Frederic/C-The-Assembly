@@ -30,7 +30,7 @@ void display_camp()
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("You have entered a camp", 420, gScreenSurface->h / 2 - 90, 32);
     renderCombatText("Your have been healed for 25% of your maximum HP", 210, gScreenSurface->h / 2 - 60, 32);
-    renderMap(load_Pathed_Media("maps/Camp", 9), 380, gScreenSurface->h / 3 - 40, 0, 0);
+    renderMap(load_Pathed_Media("maps/Camp", 1), 550, gScreenSurface->h / 2, 0, 0);
     SDL_UpdateWindowSurface(gWindow);
     FadeEffect(0, 0);
     SDL_Delay(1000);

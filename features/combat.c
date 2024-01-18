@@ -19,7 +19,7 @@ void combat(char *map)
     monster = get_monster(map, &player);
 
     SDL_Surface *background = load_Background_Media(country);
-    SDL_Surface *player_surface = load_Pathed_Media("Player", 4);
+    SDL_Surface *player_surface = load_Pathed_Media("Player", 1);
     SDL_Surface *monster_surface = load_Monster_Media(monster, map);
 
     SDL_Surface *copiedSurface = SDL_CreateRGBSurfaceWithFormat(0, gScreenSurface->w, gScreenSurface->h,
@@ -372,7 +372,7 @@ struct Card get_card(char card_name[30])
 char *get_country(char *map)
 {
     char *country = NULL; // Initialize to NULL
-    char countries[5][20] = {"France", "Germany", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
 
     for (int i = 0; i < 5; i++)
     {
@@ -442,7 +442,7 @@ SDL_Surface *load_Monster_Media(struct Monster monster, char *map)
     strcat(monster_path, monster.class);
     strcat(monster_path, "/sprites/");
     strcat(monster_path, map);
-    return load_Pathed_Media(monster_path, 4);
+    return load_Pathed_Media(monster_path, 1);
 }
 
 SDL_Surface *load_Background_Media(char *country)
