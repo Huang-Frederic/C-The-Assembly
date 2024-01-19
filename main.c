@@ -84,6 +84,8 @@
 #include "features/combat.c"
 #include "features/event.c"
 
+#include "features/input.c"
+
 int main(int argc, char *args[])
 {
     init();
@@ -91,8 +93,9 @@ int main(int argc, char *args[])
     while (1)
     {
         char *selected_map = map();
-        // printf("Selected: %s\n\n", selected_map);
+        printf("Selected: %s\n\n", selected_map);
         event(selected_map);
+        // input();
     }
 
     close_SDL();

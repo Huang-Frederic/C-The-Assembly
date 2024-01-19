@@ -23,7 +23,7 @@ bool create_text(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, 
         printf("\nUnable to create texture from surface!");
         return false;
     }
-    TextRect->x = middle ? WINDOW_WIDTH / 2 - TextSurface->w / 2 : 350;
+    TextRect->x = middle ? SCREEN_WIDTH / 2 - TextSurface->w / 2 : 350;
     TextRect->y = y + 50 + middle * 50;
     TextRect->w = TextSurface->w;
     TextRect->h = TextSurface->h;
