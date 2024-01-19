@@ -1,7 +1,8 @@
 #include "include/main.h"
+#include "feature/database.c"
 #include "feature/menu.c"
 
-bool createWindow()
+bool create_window()
 {
     Window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
     if (!Window)
@@ -18,7 +19,7 @@ bool createWindow()
     return true;
 }
 
-bool loadMedia()
+bool load_media()
 {
 
     // Load splash image
@@ -39,11 +40,40 @@ bool loadMedia()
     return true;
 }
 
+void clear_window()
+{
+    SDL_DestroyRenderer(Renderer);
+    SDL_DestroyWindow(Window);
+    SDL_Quit();
+    printf("\nClear proccess done.");
+}
+
 int main(int argc, char *argv[])
 {
-    createWindow();
-    if (!displayMenu())
-        return 1;
-    clearMemory();
+
+    // for (int i = 0; i < 5; ++i)
+    //     if (board[i])
+    //         printf("\n%s", board[i]);
+    int score = 22222222;
+    char *username = "Goat";
+    insert(score, username);
+    create_window();
+    display_menu();
+    // return 1;
+    clear_menu();
+    clear_window();
     return 0;
 }
+
+// BDD
+// int main(int argc, char *argv[])
+// {
+//     delete_all();
+//     int score = 233333;
+//     char *username = "Ar";
+//     create();
+
+//     insert(score, username);
+//     display_ranking_head();
+//     return 0;
+// }

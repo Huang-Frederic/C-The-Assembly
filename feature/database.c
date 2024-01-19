@@ -43,7 +43,7 @@ bool create()
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -76,7 +76,7 @@ bool insert(int score, char *username)
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -112,7 +112,7 @@ bool select_head()
     sqlite3 *db;
     char *err_msg = 0;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -151,7 +151,7 @@ bool select_by_username(char *username)
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -200,7 +200,7 @@ bool update(int score, char *username)
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -235,7 +235,7 @@ bool delete(char *username)
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -270,7 +270,7 @@ bool delete_all()
     char *err_msg = 0;
     sqlite3_stmt *res;
 
-    int rc = sqlite3_open("slay-the-assembly.db", &db);
+    int rc = sqlite3_open("database/slay-the-assembly.db", &db);
 
     if (rc != SQLITE_OK)
     {
@@ -298,16 +298,9 @@ bool delete_all()
     return true;
 }
 
-int main(void)
+void display_ranking_head()
 {
-    // delete_all();
-    int score = 233333;
-    char *username = "Ar";
-    create();
-
-    insert(score, username);
-
+    select_head();
     for (int i = 0; i < 5; ++i)
         printf("\nId: %d | Username: %s | Score: %d", ranking[i].id, ranking[i].username, ranking[i].score);
-    return 0;
 }
