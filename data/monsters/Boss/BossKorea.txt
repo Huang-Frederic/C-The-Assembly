@@ -1,7 +1,5 @@
-BossKorea
-150
-__Monster__Card_EX
-__Monster__Card_OX
-2
-__Monster__Card_IX
-3
+RDX
+300
+__Monster__Assembly
+__Monster__Retaliate
+1

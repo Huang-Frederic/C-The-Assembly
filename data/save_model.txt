@@ -8,3 +8,13 @@
 Card_1
 Card_2
 ...
+
+PENSE BETE PROJET C :
+
+// Handle les points pour les scores
+
+Faire Win 
+Faire Lose
+
+Bug affichage sur les annonces de cartes qui coutent trop cher
+

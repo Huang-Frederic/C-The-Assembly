@@ -1,7 +1,6 @@
 // name
 // energyCost
 // Animation (1 = Atk, 2 = Jmp, 3 = Crcl)
-// Description of the card
 // Dammage (Deal X dammages)
 // Strength (Give +25% Strength for 3 turn)
 // Vulnerability (Inflicts -25% def for 3 turns)

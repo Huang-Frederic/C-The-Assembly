@@ -1,7 +1,7 @@
-BossGermany
-150
-__Monster__Card_EX
-__Monster__Card_OX
+RSI
+300
+__Monster__Better-Grades
+__Monster__Binary-Assault
 2
-__Monster__Card_IX
+__Monster__Quantum-Firewall
 3

@@ -1,7 +1,7 @@
-CommonJapan
-150
-__Monster__Card_EX
-__Monster__Card_OX
+BX
+80
+__Monster__Nanobite
+__Monster__But-its-simple
 2
-__Monster__Card_IX
+__Monster__Opcode-Slash
 3

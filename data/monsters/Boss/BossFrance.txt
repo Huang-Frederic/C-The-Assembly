@@ -1,7 +1,7 @@
-BossFrance
-150
-__Monster__Card_EX
-__Monster__Card_OX
-2
-__Monster__Card_IX
+RAX
+300
+__Monster__Opcode-Slash
+__Monster__Overflowing
 3
+__Monster__Retaliate
+4

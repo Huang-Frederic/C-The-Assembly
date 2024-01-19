@@ -28,7 +28,7 @@ char *map()
 
     // Assuming all maps have the same width
     int mapWidth = maps[0]->w;
-    int spacing = 100; // 40 pixels
+    int spacing = 100;
 
     for (int i = 0; i < map_occurrence; i++)
     {

@@ -1,7 +1,7 @@
-EliteGermany
+ESI
 150
-__Monster__Card_EX
-__Monster__Card_OX
-2
-__Monster__Card_IX
+__Monster__Gangbyte
+__Monster__Binary-Assault
 3
+__Monster__Retaliate
+4
