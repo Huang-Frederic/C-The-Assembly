@@ -189,7 +189,7 @@ struct Player get_player()
 
     // Set all informations except Deck
     int tab[5];
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 8; i++)
     {
         if (i == 2)
         {
@@ -886,7 +886,7 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
 
     // render the card and the message
 
-    sprintf(message, "%s have played %s", monster->name, card.name);
+    sprintf(message, "%s have played %s", monster->name, addSpaceCombat(card.name));
     SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
     int textWidth = strlen(message) * 18;
     int xCentered = (gScreenSurface->w - textWidth) / 2;
@@ -1236,7 +1236,6 @@ void apply_curl(struct Player *player, char *country, int curled_weather)
 
     renderMap(load_Pathed_Media(weather_path, 0.5), 580, gScreenSurface->h / 2, 0, 0);
 
-    SDL_UpdateWindowSurface(gWindow);
     FadeEffect(0, 0);
 
     SDL_Delay(1000);

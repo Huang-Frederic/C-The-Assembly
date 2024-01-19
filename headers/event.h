@@ -9,6 +9,7 @@ struct Save
     int hp;
     int max_hp;
     int max_energy;
+    int score;
 };
 
 struct Treasure

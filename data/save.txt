@@ -1,10 +1,11 @@
-30
-10
+36
+7
 Hisshiden
 0
 300
 300
-10
+11
+107
 __Player__Arrow-Code-Volley
 __Player__Binary-Bastion
 __Player__Byte-Picnic-Healing
@@ -35,3 +36,9 @@ __Player__Sananes-taught-me
 __Player__C-Guard
 __Player__C++(+)
 __Player__Clean-Code
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science
+__Player__Crimson-Code
