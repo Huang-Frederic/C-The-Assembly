@@ -1,0 +1,7 @@
+RCX
+300
+__Monster__Byte-Mend
+__Monster__Circuit-Catalyst
+3
+__Monster__Sanctuary-Code
+4

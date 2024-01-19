@@ -1,0 +1,7 @@
+RSI
+300
+__Monster__Better-Grades
+__Monster__Binary-Assault
+2
+__Monster__Quantum-Firewall
+3

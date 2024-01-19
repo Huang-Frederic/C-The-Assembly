@@ -1,0 +1,7 @@
+EDX
+150
+__Monster__Opcode-Slash
+__Monster__Circuit-Catalyst
+3
+__Monster__NanoGuard
+4

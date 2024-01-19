@@ -1,0 +1,7 @@
+EAX
+150
+__Monster__Opcode-Slash
+__Monster__Better-Grades
+3
+__Monster__Quantum-Firewall
+5

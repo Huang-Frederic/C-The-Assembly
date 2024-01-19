@@ -1,0 +1,5 @@
+RDX
+300
+__Monster__Assembly
+__Monster__Retaliate
+1

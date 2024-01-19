@@ -1,0 +1,7 @@
+AX
+80
+__Monster__Nanobite
+__Monster__Byte-Bouncer
+2
+__Monster__Its-Low-Level
+3

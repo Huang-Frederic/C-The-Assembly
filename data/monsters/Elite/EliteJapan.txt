@@ -1,0 +1,7 @@
+EBX
+150
+__Monster__Nanobite
+__Monster__Data-Recovery
+2
+__Monster__Its-Low-Level
+3

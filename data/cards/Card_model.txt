@@ -1,0 +1,9 @@
+// name
+// energyCost
+// Animation (1 = Atk, 2 = Jmp, 3 = Crcl)
+// Dammage (Deal X dammages)
+// Strength (Give +25% Strength for 3 turn)
+// Vulnerability (Inflicts -25% def for 3 turns)
+// Healing (Give a defined amount of health)
+// Armor (Give a defined amount of shield)
+// Dodge (Give +25% dodge rate for 3 turns)

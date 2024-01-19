@@ -1,0 +1,7 @@
+ECX
+150
+__Monster__Opcode-Slash
+__Monster__NanoGuard
+2
+__Monster__Overflowing
+3
