@@ -95,7 +95,6 @@ int main(int argc, char *args[])
         char *selected_map = map();
         printf("Selected: %s\n\n", selected_map);
         event(selected_map);
-        // input();
     }
 
     close_SDL();

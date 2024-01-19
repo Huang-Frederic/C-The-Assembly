@@ -51,6 +51,25 @@ struct Monster
     int third_cd_max;
 };
 
+struct Rewards
+{
+    int health;
+    struct Card first_card;
+    struct Card second_card;
+};
+
+struct Save
+{
+    int deck_size;
+    int day;
+    char player_name[30];
+    int difficulty;
+    int hp;
+    int max_hp;
+    int max_energy;
+    int score;
+};
+
 struct Player get_player();
 struct Monster get_monster(char *map, struct Player *player);
 struct Card get_card(char card_name[30]);
@@ -79,6 +98,11 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
 void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDisplay, int CurrentCardIndices[], SDL_Surface *copied_surface, int FadeType);
 void apply_curl(struct Player *player, char *country, int curled_weather);
 char *addSpaceCombat(char *str);
-void combat_won();
+void combat_won(struct Player player, struct Monster monster);
+void win_anim_player(SDL_Surface *screenCopy);
+void win_anim_rewards(SDL_Surface *screenCopy);
+struct Rewards get_rewards();
+void display_rewards(struct Rewards rewards, SDL_Surface *screenCopy, struct Player player, struct Monster monster);
+void save_combat(struct Rewards rewards, struct Player player, struct Monster monster);
 void combat_lost();
 #endif

@@ -12,7 +12,10 @@ Card_2
 
 PENSE BETE PROJET C :
 
-Display on maps
-
-Faire Win 
 Faire Lose
+- Sprite du perso vous avez perdu 
+- Score affiché en grand 
+- (affiche le leaderboard ? (+ Message pr dire t'es cbème dans le classement et t'es à combien de pt du top 5 ?))
+- Delete Save
+
+

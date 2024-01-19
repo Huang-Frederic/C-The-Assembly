@@ -180,11 +180,6 @@ char *get_treasure_card()
 
 void save_treasure(struct Treasure treasure)
 {
-    // TODO
-    printf("Treasure Energy: %d\n", treasure.energy);
-    printf("Treasure Card: %s\n", treasure.card);
-    printf("Treasure If No Energy: %s\n", treasure.if_no_energy_card);
-
     display_treasure(treasure);
 
     struct Save save;

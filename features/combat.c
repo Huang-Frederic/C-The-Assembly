@@ -9,6 +9,8 @@ void combat(char *map)
     char country[20];
     strcpy(country, get_country(map)); // Change with map
 
+    printf("Country: %s\n", country);
+
     int curled_weather = rand() % 3; // replace with the curl function
 
     // INIT THINGS
@@ -172,7 +174,7 @@ void combat(char *map)
         }
     }
 
-    combat_win == 1 ? combat_won() : combat_lost();
+    combat_win == 1 ? combat_won(player, monster) : combat_lost();
 }
 
 struct Player get_player()
@@ -374,7 +376,7 @@ struct Card get_card(char card_name[30])
 char *get_country(char *map)
 {
     char *country = NULL; // Initialize to NULL
-    char countries[5][20] = {"France", "Usa", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
 
     for (int i = 0; i < 5; i++)
     {
@@ -1273,12 +1275,325 @@ char *addSpaceCombat(char *str)
     return result;
 }
 
-void combat_won()
+void combat_won(struct Player player, struct Monster monster)
 {
-    // TODO Récompenses
-    printf("YOU WON\n");
+
+    // - Sprite du perso + Vous avez gagnés
+    SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
+    SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
+    // make a copy of gScreenSurface
+    SDL_SetSurfaceAlphaMod(screenCopy, 255);
+    SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+    for (int i = 0; i < 200; i++)
+    {
+        // Render the semi-transparent black overlay on top
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, i));
+        SDL_BlitSurface(overlay, NULL, gScreenSurface, NULL);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+
+    SDL_BlitSurface(gScreenSurface, NULL, screenCopy, NULL);
+
+    win_anim_player(screenCopy);
+    win_anim_rewards(screenCopy);
+    display_rewards(get_rewards(), screenCopy, player, monster);
+
+    // - Coffre
+    // - Coffre ouvert
+    // - PV + 1 à 2 cartes
+    // - Save
+
+    SDL_FreeSurface(screenCopy);
+}
+
+void win_anim_player(SDL_Surface *screenCopy)
+{
+    SDL_Event e;
+    int clicked = 0;
+
+    for (int i = -200; i <= 420; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText("You have won !", i + 100, 200, 32);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+    SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 500, gScreenSurface->h - 200, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
+    for (int i = 420; i <= 1280; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText("You have won !", i + 100, 200, 32);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+}
+
+void win_anim_rewards(SDL_Surface *screenCopy)
+{
+    SDL_Event e;
+    int clicked = 0;
+
+    for (int i = -200; i <= 420; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderMap(load_Pathed_Media("others/chest", 2.2), i, gScreenSurface->h / 4, 0, 0);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+    SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 500, gScreenSurface->h - 200, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+
+    SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
+    renderMap(load_Pathed_Media("others/chest_open", 2.2), 420, gScreenSurface->h / 4, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+    SDL_Delay(600);
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 500, gScreenSurface->h - 200, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+}
+
+struct Rewards get_rewards()
+{
+    srand(time(NULL));
+    struct Rewards rewards;
+    int clicked = 0;
+    SDL_Event e;
+    int number_of_cards = 0;
+
+    DIR *d;
+    struct dirent *dir;
+
+    // int health;
+    rewards.health = rand() % 20 + 1;
+
+    // struct Card first_card;
+    d = opendir("data/cards/");
+    if (d)
+    {
+        while ((dir = readdir(d)) != NULL)
+        {
+            if (strstr(dir->d_name, ".txt") != NULL && strncmp(dir->d_name, "__Player__", strlen("__Player__")) == 0)
+            {
+                number_of_cards++;
+            }
+        }
+        closedir(d);
+    }
+
+    // Get a random number between 0 and number_of_cards
+    int random_number1 = rand() % number_of_cards;
+    printf("random_number1 : %d\n", random_number1);
+    int random_number2 = rand() % number_of_cards;
+    printf("random_number2 : %d\n", random_number2);
+
+    number_of_cards = 0;
+
+    d = opendir("data/cards/");
+    if (d != NULL)
+    {
+        while ((dir = readdir(d)) != NULL)
+        {
+            if (strstr(dir->d_name, ".txt") != NULL && strncmp(dir->d_name, "__Player__", strlen("__Player__")) == 0)
+            {
+                if (random_number1 == number_of_cards)
+                {
+                    char *dot = strchr(dir->d_name, '.');
+                    if (dot != NULL)
+                    {
+                        *dot = '\0';
+                    }
+                    sprintf(rewards.first_card.name, "%s", dir->d_name);
+                    printf("rewards.first_card.name : %s\n", rewards.first_card.name);
+                }
+                if (random_number2 == number_of_cards)
+                {
+                    char *dott = strchr(dir->d_name, '.');
+                    if (dott != NULL)
+                    {
+                        *dott = '\0';
+                    }
+                    sprintf(rewards.second_card.name, "%s", dir->d_name);
+                    printf("rewards.second_card.name : %s\n", rewards.second_card.name);
+                }
+                number_of_cards++;
+            }
+        }
+        closedir(d);
+    }
+    // struct Card second_card;
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
+    return rewards;
+}
+
+void display_rewards(struct Rewards rewards, SDL_Surface *screenCopy, struct Player player, struct Monster monster)
+{
+    // DISPLAY REWARD PART
+    SDL_Event e;
+    int clicked = 0;
+    char health[5];
+    snprintf(health, sizeof(health), "%d", rewards.health);
+    char first_reward[60] = "cards/sprites/";
+    char second_reward[60] = "cards/sprites/";
+    strcat(first_reward, rewards.first_card.name);
+    strcat(second_reward, rewards.second_card.name);
+
+    SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+    renderMap(load_Pathed_Media("others/health", 0.8), 240, gScreenSurface->h / 3 + 30, 0, 0);
+    renderCombatText(health, 370, gScreenSurface->h / 3 + 140, 64);
+    renderMap(load_Pathed_Media(first_reward, 0.3), 520, gScreenSurface->h / 3 - 50, 0, 0);
+    renderMap(load_Pathed_Media(second_reward, 0.3), 840, gScreenSurface->h / 3 - 50, 0, 0);
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 200, gScreenSurface->h - 200, 0, 0);
+
+    SDL_UpdateWindowSurface(gWindow);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
     FadeEffect(0, 1);
-    SDL_Delay(1000);
+
+    // SAVE PART
+    save_combat(rewards, player, monster);
+}
+
+void save_combat(struct Rewards rewards, struct Player player, struct Monster monster)
+{
+    struct Save save;
+
+    // Display the beginning of the save screen
+    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+    FadeEffect(0, 0);
+    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    SDL_UpdateWindowSurface(gWindow);
+
+    // Get the save data
+    FILE *save_file = fopen("data/save.txt", "r");
+    if (save_file == NULL)
+    {
+        printf("Error opening file the save file during camp save!\n");
+        close_SDL();
+    }
+    else
+    {
+        fscanf(save_file, "%d %d %s %d %d %d %d %d", &save.deck_size, &save.day, save.player_name, &save.difficulty, &save.hp, &save.max_hp, &save.max_energy, &save.score);
+        char deck[save.deck_size][30];
+        for (int i = 0; i < save.deck_size; i++)
+        {
+            fscanf(save_file, "%s", deck[i]);
+        }
+        fclose(save_file);
+
+        // Apply the changes
+        int score_points = 0;
+        if (strcmp(monster.class, "Boss") == 0)
+        {
+            score_points = 1000;
+        }
+        else if (strcmp(monster.class, "Elite") == 0)
+        {
+            score_points = 300;
+        }
+        else
+        {
+            score_points = 100;
+        }
+        save.score += score_points + (score_points * (save.day * 0.05));
+        save.hp = player.health + rewards.health;
+        save.max_hp = player.maxHealth + rewards.health;
+        save.day++;
+        save.deck_size = save.deck_size + 2;
+
+        // write to file
+        save_file = fopen("data/save.txt", "w");
+        if (save_file == NULL)
+        {
+            printf("Error opening file the save file during treasure save!\n");
+            close_SDL();
+        }
+        else
+        {
+            fprintf(save_file, "%d\n%d\n%s\n%d\n%d\n%d\n%d\n%d\n", save.deck_size, save.day, save.player_name, save.difficulty, save.hp, save.max_hp, save.max_energy, save.score);
+            for (int i = 0; i < save.deck_size - 2; i++)
+            {
+                fprintf(save_file, "%s\n", deck[i]);
+            }
+            fprintf(save_file, "%s\n", rewards.first_card.name);
+            fprintf(save_file, "%s\n", rewards.second_card.name);
+
+            fclose(save_file);
+        }
+    }
+
+    // Display the end of the save screen
+    SDL_Delay(500);
+    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    SDL_UpdateWindowSurface(gWindow);
+    FadeEffect(0, 1);
 }
 
 void combat_lost()
@@ -1291,4 +1606,3 @@ void combat_lost()
 }
 
 // Combat Lost -> Si on perd affiche le score et renvoi au menu et ensuite supprimer la save
-// Combat Won -> RECOMPENSE Si on gagne offre les récompenses (1:HP, 2:Carte, 3:Carte/Energy) et sauvegarde (update le score, applique les récompenses, ajoute 1 jour), passe a la prochaine map

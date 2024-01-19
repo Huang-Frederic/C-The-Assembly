@@ -14,7 +14,7 @@ char *map()
         "Camp",
         "Boss",
     };
-    char countries[5][20] = {"France", "Usa", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
     SDL_Surface *background = load_Background_Media_Map(background_image);
@@ -28,7 +28,7 @@ char *map()
 
     // Assuming all maps have the same width
     int mapWidth = maps[0]->w;
-    int spacing = 100;
+    int spacing = 200;
 
     for (int i = 0; i < map_occurrence; i++)
     {
@@ -105,7 +105,7 @@ char *map()
             strcpy(title_chosen[i], map_chosen[i]);
             addSpaceBeforeUppercase(title_chosen[i]);
 
-            int textX = mapX + (maps[i]->w - textWidth) / 2;
+            int textX = mapX + (maps[i]->w - textWidth) / 2 - 20;
             int textY = mapY + maps[i]->h + 20;
 
             // Check if the mouse is inside the map area
@@ -450,9 +450,8 @@ void display_score()
     loadFont(selectedFont, 32);
     SDL_Color textColor = {255, 255, 255, 255};
     SDL_Surface *message = TTF_RenderText_Solid(font, text, textColor);
-
     int x = gScreenSurface->w - message->w - 30;
-    int y = gScreenSurface->w - message->h - 30;
+    int y = 20;
 
     if (message != NULL)
     {
