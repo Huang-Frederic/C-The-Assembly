@@ -50,7 +50,7 @@ void save_camp()
     SDL_UpdateWindowSurface(gWindow);
 
     // Get the save data
-    FILE *save_file = fopen("save.txt", "r");
+    FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
         printf("Error opening file the save file during camp save!\n");
@@ -71,7 +71,7 @@ void save_camp()
         save.day++;
 
         // write to file
-        save_file = fopen("save.txt", "w");
+        save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
         {
             printf("Error opening file the save file during camp save!\n");
@@ -101,7 +101,7 @@ struct Treasure get_treasure()
     srand((unsigned int)time(NULL));
 
     // check there is > 28 energy in the save file
-    FILE *save_file = fopen("save.txt", "r");
+    FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
         printf("Error opening file the save file during treasure!\n");
@@ -143,7 +143,7 @@ char *get_treasure_card()
     {
         while ((dir = readdir(d)) != NULL)
         {
-            if (strstr(dir->d_name, ".txt") != NULL && strcmp(dir->d_name, "CARD_MODEL.txt") != 0)
+            if (strstr(dir->d_name, ".txt") != NULL && strncmp(dir->d_name, "__Player__", strlen("__Player__")) == 0)
             {
                 number_of_cards++;
             }
@@ -160,7 +160,7 @@ char *get_treasure_card()
     {
         while ((dir = readdir(d)) != NULL)
         {
-            if (strstr(dir->d_name, ".txt") != NULL && strcmp(dir->d_name, "CARD_MODEL.txt") != 0)
+            if (strstr(dir->d_name, ".txt") != NULL && strncmp(dir->d_name, "__Player__", strlen("__Player__")) == 0)
             {
                 if (random_number == number_of_cards++)
                 {
@@ -197,7 +197,7 @@ void save_treasure(struct Treasure treasure)
     SDL_UpdateWindowSurface(gWindow);
 
     // Get the save data
-    FILE *save_file = fopen("save.txt", "r");
+    FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
         printf("Error opening file the save file during camp save!\n");
@@ -220,7 +220,7 @@ void save_treasure(struct Treasure treasure)
         save.deck_size = save.deck_size + new_cards;
 
         // write to file
-        save_file = fopen("save.txt", "w");
+        save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
         {
             printf("Error opening file the save file during treasure save!\n");

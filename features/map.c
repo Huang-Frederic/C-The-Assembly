@@ -14,7 +14,7 @@ char *map()
         "Camp",
         "Boss",
     };
-    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "Usa", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
     SDL_Surface *background = load_Background_Media_Map(background_image);
@@ -409,7 +409,7 @@ int FadeEffect(int faded, int inOut)
 
 int get_save_day()
 {
-    FILE *save = fopen("save.txt", "r");
+    FILE *save = fopen("data/save.txt", "r");
     if (save == NULL)
     {
         printf("Error opening file save.txt for getting the day!\n");

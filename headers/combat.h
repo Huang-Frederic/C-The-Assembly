@@ -12,6 +12,7 @@ struct Card
     int heal;
     int armor;
     int dodge;
+    char path[100];
 };
 
 struct Player
@@ -77,6 +78,7 @@ void update_status(struct Player *player, struct Monster *monster);
 void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surface *monster_surface, SDL_Surface *copied_surface, int is_player);
 void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDisplay, int CurrentCardIndices[], SDL_Surface *copied_surface, int FadeType);
 void apply_curl(struct Player *player, char *country, int curled_weather);
+char *addSpaceCombat(char *str);
 void combat_won();
 void combat_lost();
 #endif

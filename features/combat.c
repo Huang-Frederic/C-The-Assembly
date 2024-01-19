@@ -180,7 +180,7 @@ struct Player get_player()
     struct Player player;
 
     // use fscanf to read save.txt file
-    FILE *save = fopen("save.txt", "r");
+    FILE *save = fopen("data/save.txt", "r");
     if (save == NULL)
     {
         printf("An error while opening save.txt have occured!\n");
@@ -344,6 +344,8 @@ struct Card get_card(char card_name[30])
     char path[50] = "data/cards/";
     strcat(path, card_name);
 
+    strcpy(card.path, card_name);
+
     FILE *card_file = fopen(path, "r");
     if (card_file == NULL)
     {
@@ -372,7 +374,7 @@ struct Card get_card(char card_name[30])
 char *get_country(char *map)
 {
     char *country = NULL; // Initialize to NULL
-    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "Usa", "China", "Korea", "Japan"};
 
     for (int i = 0; i < 5; i++)
     {
@@ -717,8 +719,16 @@ void initializeCardDisplayRects(SDL_Rect cardDisplayRects[], int cardsToDisplay)
 
 void renderCard(struct Card card, int x, int y, float scale)
 {
+    // remove .txt
+    char *dot = strrchr(card.path, '.');
+    if (dot != NULL)
+    {
+        *dot = '\0';
+    }
+
     char imagePath[100];
-    sprintf(imagePath, "cards/sprites/%s", card.name);
+
+    sprintf(imagePath, "cards/sprites/%s", card.path);
 
     SDL_Surface *cardImage = load_Pathed_Media(imagePath, scale);
     if (cardImage == NULL)
@@ -755,9 +765,15 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
     if (player->energy >= card.energyCost)
     {
         // Anounce the card played
-        sprintf(message, "You have played %s", card.name);
 
-        renderCombatText(message, gScreenSurface->w / 3, gScreenSurface->h / 5, 32);
+        char spacedName[30];
+        strcpy(spacedName, addSpaceCombat(card.name));
+
+        sprintf(message, "You have played %s", spacedName);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
         SDL_UpdateWindowSurface(gWindow);
         SDL_Delay(1 * 400);
 
@@ -869,6 +885,8 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     printf("%s Damage Output Pre-Buffs : %d\n", monster->name, card.damage);
     card.damage = monster->strength != 0 ? card.damage * 1.25 : card.damage;
     card.damage += card.damage * (0.05 * player->day);
+    card.heal += card.heal * (0.05 * player->day);
+    card.armor += card.armor * (0.05 * player->day);
     printf("%s Damage Output Post-Buffs : %d\n\n", monster->name, card.damage);
 
     int vulnerability = player->vulnerability != 0 ? 1.5 : 1;
@@ -1102,7 +1120,7 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
     for (int i = 0; i < cardsToDisplay; ++i)
     {
         char imagePath[100];
-        sprintf(imagePath, "cards/sprites/%s", player.Deck[CurrentCardIndices[i]].name);
+        sprintf(imagePath, "cards/sprites/__Player__%s", player.Deck[CurrentCardIndices[i]].name);
 
         cardImages[i] = load_Pathed_Media(imagePath, 0.25);
         if (cardImages[i] == NULL)
@@ -1209,6 +1227,33 @@ void apply_curl(struct Player *player, char *country, int curled_weather)
 
     SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
     SDL_FreeSurface(screenCopy);
+}
+
+char *addSpaceCombat(char *str)
+{
+    char *result = malloc(strlen(str) + 1); // +1 for the null terminator
+
+    if (result == NULL)
+    {
+        // Handle memory allocation failure
+        return NULL;
+    }
+
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (str[i] == '-')
+        {
+            result[i] = ' ';
+        }
+        else
+        {
+            result[i] = str[i];
+        }
+    }
+
+    result[strlen(str)] = '\0'; // Null-terminate the result
+
+    return result;
 }
 
 void combat_won()

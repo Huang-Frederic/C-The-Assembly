@@ -1,7 +1,7 @@
 BossJapan
 150
-Card_EX
-Card_OX
+__Monster__Card_EX
+__Monster__Card_OX
 2
-Card_IX
+__Monster__Card_IX
 3
