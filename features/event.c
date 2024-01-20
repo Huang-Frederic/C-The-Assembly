@@ -29,7 +29,7 @@ void display_camp()
     // Display the camp screen
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("You have entered a camp", 420, gScreenSurface->h / 2 - 90, 32);
-    renderCombatText("Your have been healed for 25% of your maximum HP", 210, gScreenSurface->h / 2 - 60, 32);
+    renderCombatText("Your have been healed for 75% of your maximum HP", 210, gScreenSurface->h / 2 - 60, 32);
     renderMap(load_Pathed_Media("maps/Camp", 1), 550, gScreenSurface->h / 2, 0, 0);
     SDL_UpdateWindowSurface(gWindow);
     FadeEffect(0, 0);
@@ -67,7 +67,7 @@ void save_camp()
         fclose(save_file);
 
         // Apply the changes
-        save.hp = save.hp + (save.max_hp * 0.25) > save.max_hp ? save.max_hp : save.hp + (save.max_hp * 0.25);
+        save.hp = save.hp + (save.max_hp * 0.75) > save.max_hp ? save.max_hp : save.hp + (save.max_hp * 0.75);
         save.score += 20 + (20 * (save.day * 0.05));
         save.day++;
 

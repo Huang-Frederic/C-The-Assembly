@@ -96,7 +96,7 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
 void update_status(struct Player *player, struct Monster *monster);
 void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surface *monster_surface, SDL_Surface *copied_surface, int is_player);
 void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDisplay, int CurrentCardIndices[], SDL_Surface *copied_surface, int FadeType);
-void apply_curl(struct Player *player, char *country, int curled_weather);
+void apply_curl(struct Player *player, char *country, struct Weather *curled_weather);
 char *addSpaceCombat(char *str);
 void combat_won(struct Player player, struct Monster monster);
 void win_anim_player(SDL_Surface *screenCopy);

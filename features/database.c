@@ -1,4 +1,5 @@
 #include "../headers/database.h"
+#include "../headers/include.h"
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName)
 {

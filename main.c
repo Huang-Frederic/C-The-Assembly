@@ -80,6 +80,8 @@
 #include "headers/include.h"
 
 #include "features/default.c"
+#include "features/database.c"
+#include "features/weather.c"
 #include "features/map.c"
 #include "features/combat.c"
 #include "features/event.c"

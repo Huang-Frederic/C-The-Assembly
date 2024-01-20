@@ -11,11 +11,11 @@ void combat(char *map)
 
     printf("Country: %s\n", country);
 
-    int curled_weather = rand() % 3; // replace with the curl function
-
     // INIT THINGS
     struct Player player;
     struct Monster monster;
+    struct Weather weather;
+    get_weather(&weather, country);
 
     player = get_player();
     monster = get_monster(map, &player);
@@ -137,7 +137,7 @@ void combat(char *map)
 
         if (turn == 0 && player_turn == 0)
         {
-            apply_curl(&player, country, curled_weather);
+            apply_curl(&player, country, &weather);
             display_hp_bars(player, monster);
             FadeEffect(0, 0);
         }
@@ -775,6 +775,8 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
     char message[100];
     if (player->energy >= card.energyCost)
     {
+        SDL_Surface *Output_surface = SDL_CreateRGBSurface(0, gScreenSurface->w, gScreenSurface->h, 32, 0, 0, 0, 0);
+        SDL_BlitSurface(gScreenSurface, NULL, Output_surface, NULL);
         // Anounce the card played
 
         char spacedName[30];
@@ -786,7 +788,7 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
 
         renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
         SDL_UpdateWindowSurface(gWindow);
-        SDL_Delay(1 * 400);
+        SDL_Delay(1 * 500);
 
         // apply multipliers
         printf("%s Damage Output Pre-Buffs : %d\n", player->name, card.damage);
@@ -804,6 +806,14 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
                 switch (dodge)
                 {
                 case 0 ... 75:
+                    SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+                    sprintf(message, "You have dealt %d dammages", card.damage);
+                    int textWidth = strlen(message) * 18;
+                    int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+                    renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+                    SDL_UpdateWindowSurface(gWindow);
+                    SDL_Delay(1 * 800);
                     while (monster->armor != 0 && card.damage != 0)
                     {
                         card.damage -= 1;
@@ -823,6 +833,15 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
             }
             else
             {
+                SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+                sprintf(message, "You have dealt %d dammages", card.damage);
+                int textWidth = strlen(message) * 18;
+                int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+                renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+                SDL_UpdateWindowSurface(gWindow);
+                SDL_Delay(1 * 800);
+
                 while (monster->armor != 0 && card.damage != 0)
                 {
                     card.damage -= 1;
@@ -844,12 +863,72 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
         player->strength = card.strength ? 3 : player->strength;
         monster->vulnerability = card.vulnerability ? 3 : monster->vulnerability;
 
+        if (card.heal != 0)
+        {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "You have healed %d HP", card.heal);
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
+        }
+        if (card.armor != 0)
+        {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "You have gained %d Shields", card.armor);
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
+        }
+        if (card.dodge != 0)
+        {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "You have gained Dodge for 3 turns");
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
+        }
+        if (card.strength != 0)
+        {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "You have gained Strength for 3 turns");
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
+        }
+        if (card.vulnerability != 0)
+        {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "%s is vulnerable for 3 turns", monster->name);
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
+        }
+
         combat_animation(&card, player_surface, monster_surface, copied_surface, 1);
+        SDL_FreeSurface(Output_surface);
         return true;
     }
     else
     {
-        sprintf(message, "You don't have enough energy to play %s", card.name);
+        char spacedName[30];
+        strcpy(spacedName, addSpaceCombat(card.name));
+
+        sprintf(message, "You don't have enough energy to play %s", spacedName);
         int textWidth = strlen(message) * 18;
         int xCentered = (gScreenSurface->w - textWidth) / 2;
 
@@ -863,6 +942,8 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
 void ennemy_action(int turns, struct Player *player, struct Monster *monster, SDL_Surface *player_surface, SDL_Surface *monster_surface, SDL_Surface *copied_surface, SDL_Surface *copied_surface_cards)
 {
     // render the text
+    SDL_Surface *Output_surface = SDL_CreateRGBSurface(0, gScreenSurface->w, gScreenSurface->h, 32, 0, 0, 0, 0);
+    SDL_BlitSurface(gScreenSurface, NULL, Output_surface, NULL);
     renderCombatText("Ennemy Turn", gScreenSurface->w / 3 - 40, gScreenSurface->h / 5 - 10, 84);
     SDL_UpdateWindowSurface(gWindow);
     SDL_Delay(500);
@@ -908,38 +989,28 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     printf("%s Damage Output Post-Buffs : %d\n\n", monster->name, card.damage);
 
     // if player dodged then apply dammages in function of armor and vulnerability
-    if (player->dodge > 0)
+    if (card.damage != 0)
     {
-        if (card.damage != 0)
+        srand(time(NULL));
+        int dodge = rand() % 100;
+        if (player->dodge > 0 && dodge >= 75)
         {
-            srand(time(NULL));
-            int dodge = rand() % 100;
-            switch (dodge)
-            {
-            case 0 ... 75:
-                while (player->armor != 0 && card.damage != 0)
-                {
-                    card.damage -= 1;
-                    player->armor -= 1;
-                }
-                while (player->health != 0 && card.damage != 0)
-                {
-                    card.damage -= 1;
-                    player->health -= 1;
-                }
-
-                break;
-            case 76 ... 100:
-                printf("You have dodged the attack!\n\n");
-                SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
-                renderCombatText("You have dodged the attack!", gScreenSurface->w / 3, gScreenSurface->h / 5, 32);
-                SDL_UpdateWindowSurface(gWindow);
-                SDL_Delay(800);
-                break;
-            }
+            printf("You have dodged the attack!\n\n");
+            SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
+            renderCombatText("You have dodged the attack!", gScreenSurface->w / 3, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(700);
         }
         else
         {
+            SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+            sprintf(message, "%s have dealt %d dammages", monster->name, card.damage);
+            int textWidth = strlen(message) * 18;
+            int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+            renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+            SDL_UpdateWindowSurface(gWindow);
+            SDL_Delay(1 * 800);
             while (player->armor != 0 && card.damage != 0)
             {
                 card.damage -= 1;
@@ -953,10 +1024,6 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
         }
     }
 
-    // animation
-    SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
-    combat_animation(&card, player_surface, monster_surface, copied_surface, 0);
-
     // Apply the card effects
     monster->health = monster->health + card.heal > monster->maxHealth ? monster->maxHealth : monster->health + card.heal;
     monster->armor += card.armor;
@@ -964,9 +1031,71 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     monster->strength = card.strength ? 4 : monster->strength;
     player->vulnerability = card.vulnerability ? 4 : monster->vulnerability;
 
+    if (card.heal != 0)
+    {
+        SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+        sprintf(message, "%s have healed %d HP", monster->name, card.heal);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        SDL_Delay(1 * 800);
+    }
+    if (card.armor != 0)
+    {
+        SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+        sprintf(message, "%s have gained %d Shields", monster->name, card.armor);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        SDL_Delay(1 * 800);
+    }
+    if (card.dodge != 0)
+    {
+        SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+        sprintf(message, "%s have gained Dodge for 3 turns", monster->name);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        SDL_Delay(1 * 800);
+    }
+    if (card.strength != 0)
+    {
+        SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+        sprintf(message, "%s have gained Strength for 3 turns", monster->name);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        SDL_Delay(1 * 800);
+    }
+    if (card.vulnerability != 0)
+    {
+        SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
+        sprintf(message, "%s is vulnerable for 3 turns", player->name);
+        int textWidth = strlen(message) * 18;
+        int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+        renderCombatText(message, xCentered, gScreenSurface->h / 5, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        SDL_Delay(1 * 800);
+    }
+
+    // animation
+    SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
+    combat_animation(&card, player_surface, monster_surface, copied_surface, 0);
+
     // reduce cd
     monster->second_cd -= 1;
     monster->third_cd -= 1;
+
+    SDL_FreeSurface(Output_surface);
 }
 
 void update_status(struct Player *player, struct Monster *monster)
@@ -1187,7 +1316,7 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
     }
 }
 
-void apply_curl(struct Player *player, char *country, int curled_weather)
+void apply_curl(struct Player *player, char *country, struct Weather *curled_weather)
 {
     char message[100];
     char buffs[100];
@@ -1195,34 +1324,36 @@ void apply_curl(struct Player *player, char *country, int curled_weather)
     SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
     SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
 
+    printf("\nWeather: %s | Code: %d\n\n", curled_weather->description, curled_weather->code);
+
     // make a copy of gScreenSurface
     SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
     // Render Black Screen
     SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, 255));
     SDL_BlitSurface(overlay, NULL, gScreenSurface, NULL);
 
-    switch (curled_weather)
+    switch (curled_weather->code)
     {
     case 0: // Rain, Cloud
-        sprintf(message, "The weather in %s is rainy and cloudy", country);
+        sprintf(message, "The weather in %s is %s", country, curled_weather->description);
         sprintf(buffs, "Dodge applied to %s for 3 turns", player->name);
         strcat(weather_path, "rainy_cloudy");
         player->dodge = 3;
 
         break;
     case 1: // Neutral
-        sprintf(message, "The weather in %s is neutral and clear", country);
+        sprintf(message, "The weather in %s is %s", country, curled_weather->description);
         sprintf(buffs, "No buffs applied to %s", player->name);
         strcat(weather_path, "neutral");
         break;
     case 2: // Sun, Heat
-        sprintf(message, "The weather in %s is bright and sunny", country);
+        sprintf(message, "The weather in %s is %s", country, curled_weather->description);
         sprintf(buffs, "Strength applied to %s for 3 turns", player->name);
         strcat(weather_path, "bright_sunny");
         player->strength = 3;
         break;
     default:
-        sprintf(message, "The weather in %s couldn't be retrieved", country);
+        sprintf(message, "The weather in %s is %s", country, curled_weather->description);
         sprintf(buffs, "No buffs applied to %s", player->name);
         strcat(weather_path, "neutral");
         break;
@@ -1408,7 +1539,7 @@ struct Rewards get_rewards()
     struct dirent *dir;
 
     // int health;
-    rewards.health = rand() % 20 + 1;
+    rewards.health = rand() % 11 + 10;
 
     // struct Card first_card;
     d = opendir("data/cards/");
