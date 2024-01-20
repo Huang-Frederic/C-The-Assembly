@@ -175,8 +175,7 @@ void generate_leaderboard(char (*board)[200])
 {
     char username_space[5][70] = {{"\0"}, {"\0"}, {"\0"}, {"\0"}, {"\0"}};
 
-    if (!ranking[0].score)
-        select_head();
+    select_head();
 
     for (int i = 0; i < 5; ++i)
     {

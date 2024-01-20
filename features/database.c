@@ -128,6 +128,7 @@ bool select_head()
     char *sql = "SELECT * FROM ranking ORDER BY score DESC LIMIT 5";
 
     rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
+    counter = 0;
 
     if (rc != SQLITE_OK)
     {
