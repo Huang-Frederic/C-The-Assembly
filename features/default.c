@@ -35,6 +35,8 @@ void init()
         {
             // Get window surface
             gScreenSurface = SDL_GetWindowSurface(gWindow);
+            SDL_Surface *icon = IMG_Load("data/Logo.png");
+            SDL_SetWindowIcon(gWindow, icon);
         }
     }
 }

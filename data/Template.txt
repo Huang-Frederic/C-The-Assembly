@@ -1,11 +1,12 @@
-10 // Deck Size
-1 // Day 
-- // Player name
-- // Difficulty (-1 = EASY, 0 = NORMAL, 1 = HARD)
-100 // HP
-100 // MaxHP
-5 // MaxEnergy = 28
-0 // Score = 0
+// Regular Template
+10
+1
+-
+-
+100
+100
+5
+0
 __Player__Pointer-Pistol-Shot
 __Player__Pointer-Pistol-Shot
 __Player__C-Bang-Pointer-Pop
@@ -17,3 +18,17 @@ __Player__Code-Breach
 __Player__Lethal-Remedy-Drop
 __Player__HemoHustle-Nudge
 
+// OP TEMPLATE
+5
+1
+OPMode
+0
+100
+100
+5
+0
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science
+__Player__For-Science

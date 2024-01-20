@@ -99,6 +99,11 @@ void combat(char *map)
                             // clear PollEvent
                             while (SDL_PollEvent(&e) != 0)
                             {
+                                if (e.type == SDL_QUIT)
+                                {
+                                    printf("\n\nQuiting ...\n\n");
+                                    close_SDL();
+                                }
                             }
                             remove_card_from_display(CurrentCardIndices, i, cardsToDisplay);
                             --cardsToDisplay;
@@ -223,7 +228,7 @@ struct Player get_player()
         fscanf(save, "%s", deck[i]);
         player.Deck[i] = get_card(deck[i]);
     }
-
+    fclose(save);
     return player;
 }
 
@@ -1198,7 +1203,6 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
     }
     else if (is_player == 0)
     {
-        printf("CARD : %d", card->animation);
         switch (card->animation)
         {
         case 1:
@@ -1428,19 +1432,15 @@ void combat_won(struct Player player, struct Monster monster)
 
     SDL_BlitSurface(gScreenSurface, NULL, screenCopy, NULL);
 
-    win_anim_player(screenCopy);
+    win_anim_player(screenCopy, "Player", "You have won !");
     win_anim_rewards(screenCopy);
     display_rewards(get_rewards(), screenCopy, player, monster);
 
-    // - Coffre
-    // - Coffre ouvert
-    // - PV + 1 à 2 cartes
-    // - Save
-
     SDL_FreeSurface(screenCopy);
+    SDL_FreeSurface(overlay);
 }
 
-void win_anim_player(SDL_Surface *screenCopy)
+void win_anim_player(SDL_Surface *screenCopy, char *image, char *message)
 {
     SDL_Event e;
     int clicked = 0;
@@ -1448,8 +1448,8 @@ void win_anim_player(SDL_Surface *screenCopy)
     for (int i = -200; i <= 420; i += 5)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
-        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
-        renderCombatText("You have won !", i + 100, 200, 32);
+        renderMap(load_Pathed_Media(image, 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText(message, i + 100, 200, 32);
 
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -1462,6 +1462,11 @@ void win_anim_player(SDL_Surface *screenCopy)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -1472,8 +1477,8 @@ void win_anim_player(SDL_Surface *screenCopy)
     for (int i = 420; i <= 1280; i += 5)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
-        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
-        renderCombatText("You have won !", i + 100, 200, 32);
+        renderMap(load_Pathed_Media(image, 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText(message, i + 100, 200, 32);
 
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -1502,6 +1507,11 @@ void win_anim_rewards(SDL_Surface *screenCopy)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -1519,6 +1529,11 @@ void win_anim_rewards(SDL_Surface *screenCopy)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -1601,6 +1616,11 @@ struct Rewards get_rewards()
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -1637,6 +1657,11 @@ void display_rewards(struct Rewards rewards, SDL_Surface *screenCopy, struct Pla
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -1725,15 +1750,208 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
     renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
     SDL_UpdateWindowSurface(gWindow);
     FadeEffect(0, 1);
+    fclose(save_file);
 }
 
 void combat_lost()
 {
-    // TODO Score
-    printf("YOU LOST\n");
-    FadeEffect(0, 1);
-    SDL_Delay(1000);
-    close_SDL();
+    struct Save save;
+    // - Sprite du perso + Vous avez Perdu
+    SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
+    SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
+    // make a copy of gScreenSurface
+    SDL_SetSurfaceAlphaMod(screenCopy, 255);
+    SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+
+    for (int i = 0; i < 200; i++)
+    {
+        // Render the semi-transparent black overlay on top
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, i));
+        SDL_BlitSurface(overlay, NULL, gScreenSurface, NULL);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+
+    SDL_BlitSurface(gScreenSurface, NULL, screenCopy, NULL);
+
+    win_anim_player(screenCopy, "others/Player_dead", "You have lost !");
+    lose_display_score(screenCopy, &save);
+    lose_display_leaderboard(screenCopy, &save);
+
+    // delete_save();
+
+    SDL_FreeSurface(screenCopy);
+    SDL_FreeSurface(overlay);
 }
 
-// Combat Lost -> Si on perd affiche le score et renvoi au menu et ensuite supprimer la save
+void lose_display_score(SDL_Surface *screenCopy, struct Save *save)
+{
+    // Get score
+
+    // Get the save data
+    FILE *save_file = fopen("data/save.txt", "r");
+    if (save_file == NULL)
+    {
+        printf("Error opening file the save file during camp save!\n");
+        close_SDL();
+    }
+    else
+    {
+        fscanf(save_file, "%d %d %s %d %d %d %d %d", &(save->deck_size), &(save->day), &(save->player_name), &(save->difficulty), &(save->hp), &(save->max_hp), &(save->max_energy), &(save->score));
+    }
+
+    // Display score
+    SDL_Event e;
+    int clicked = 0;
+
+    char message[100];
+    sprintf(message, "Your final score is %d points !", save->score);
+    int textWidth = strlen(message) * 18;
+    int xCentered = (gScreenSurface->w - textWidth) / 2;
+
+    printf("Score : %d\n", save->score);
+
+    for (int i = -200; i <= 420; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText(message, i - 50, 200, 32);
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+    SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 500, gScreenSurface->h - 200, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
+    for (int i = 420; i <= 1280; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderCombatText(message, i + 20, 200, 32);
+        SDL_UpdateWindowSurface(gWindow);
+    }
+
+    fclose(save_file);
+}
+
+void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save)
+{
+    // Get the Leaderboard position
+    select_head();
+    /////////////////////////////
+    printf("Leaderboard 2 :\n");
+    for (int i = 0; i < 5; i++)
+    {
+        printf("%d - %s : %d\n", i + 1, ranking[i].username, ranking[i].score);
+    }
+    /////////////////////////////
+    char message[100] = "You are not in the Leaderboard";
+    int score_diff = ranking[5].score - save->score;
+    char message_diff[100];
+    sprintf(message_diff, "You are %d points from the Top 5", score_diff);
+    int clicked = 0;
+    SDL_Event e;
+    char ScoreInChar[15];
+    int player_ranking = 6;
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (save->score > ranking[i].score)
+        {
+            sprintf(message, "You are ranked %d in the Leaderboard", i + 1);
+            player_ranking = i;
+            break;
+        }
+    }
+    insert(save->score, save->player_name);
+    select_head();
+    /////////////////////////////
+    printf("Leaderboard 1 :\n");
+    for (int i = 0; i < 5; i++)
+    {
+        printf("%d - %s : %d\n", i + 1, ranking[i].username, ranking[i].score);
+    }
+    printf("%s\n", message);
+    if (score_diff >= 0)
+        printf("%s\n", message_diff);
+    /////////////////////////////
+
+    // Display leaderboard
+    for (int i = -200; i <= 420; i += 5)
+    {
+        SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        for (int j = 0; j < 5; j++)
+        {
+            snprintf(ScoreInChar, sizeof(ScoreInChar), "%d", ranking[j].score);
+            if (player_ranking == j)
+            {
+                renderMap(load_Pathed_Media("Player", 0.6), i - 200, +(j * 70), 0, 0);
+            }
+            renderCombatText(ranking[j].username, i, 200 + (j * 70), 32);
+            renderCombatText(ScoreInChar, i + 400, 200 + (j * 70), 32);
+        }
+
+        SDL_UpdateWindowSurface(gWindow);
+    }
+    SDL_Delay(600);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+}
+
+void delete_save()
+{
+    const char *filename = "data/save.txt";
+
+    // Check if the file exists
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        close_SDL();
+        return;
+    }
+    fclose(file);
+
+    // Attempt to delete the file
+    if (remove(filename) == 0)
+    {
+        // Return to menu
+    }
+    else
+    {
+        printf("Unable to delete the file\n");
+        close_SDL();
+    }
+}

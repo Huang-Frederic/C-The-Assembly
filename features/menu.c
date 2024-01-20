@@ -1,3 +1,4 @@
+#include "../headers/include.h"
 #include "../headers/menu.h"
 
 bool create_text(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, SDL_Rect *TextRect, int y, int middle)
@@ -209,11 +210,11 @@ bool create_score_texts(char (*board)[200])
 bool display_menu()
 {
     check_save();
-    if (!load_media())
-    {
-        printf("\nFailed to load media!");
-        return false;
-    }
+    // if (!load_media())
+    // {
+    //     printf("\nFailed to load media!");
+    //     return false;
+    // }
 
     create_menu_texts();
     while (is_polling_event_menu())
@@ -234,6 +235,7 @@ bool display_score()
     }
     return true;
 }
+
 void clear_menu()
 {
     SDL_FreeSurface(BackgroundImg);

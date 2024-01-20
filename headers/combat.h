@@ -99,10 +99,13 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
 void apply_curl(struct Player *player, char *country, struct Weather *curled_weather);
 char *addSpaceCombat(char *str);
 void combat_won(struct Player player, struct Monster monster);
-void win_anim_player(SDL_Surface *screenCopy);
+void win_anim_player(SDL_Surface *screenCopy, char *image, char *message);
 void win_anim_rewards(SDL_Surface *screenCopy);
 struct Rewards get_rewards();
 void display_rewards(struct Rewards rewards, SDL_Surface *screenCopy, struct Player player, struct Monster monster);
 void save_combat(struct Rewards rewards, struct Player player, struct Monster monster);
 void combat_lost();
+void lose_display_score(SDL_Surface *screenCopy, struct Save *save);
+void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save);
+void delete_save();
 #endif

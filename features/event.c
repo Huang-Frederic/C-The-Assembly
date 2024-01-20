@@ -265,6 +265,11 @@ void display_treasure(struct Treasure treasure)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -282,6 +287,11 @@ void display_treasure(struct Treasure treasure)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;
@@ -312,6 +322,11 @@ void display_treasure(struct Treasure treasure)
     {
         while (SDL_PollEvent(&e) != 0)
         {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
             if (e.type == SDL_MOUSEBUTTONDOWN)
             {
                 clicked = 1;

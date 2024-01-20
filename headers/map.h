@@ -11,4 +11,4 @@ void renderTextChosen(SDL_Surface *surface, const char *text, int x, int y);
 void addSpaceBeforeUppercase(char *str);
 int FadeEffect(int faded, int inOut);
 int get_save_day();
-void display_score();
+void display_map_score();

@@ -16,8 +16,5 @@ Faire Lose
 - Sprite du perso vous avez perdu 
 - Score affiché en grand 
 - (affiche le leaderboard ? (+ Message pr dire t'es cbème dans le classement et t'es à combien de pt du top 5 ?))
-- Delete Save
 
-- Ajouter msg de degats 
-- Changer le message de curl
-- Installeur
+-> lose_display_leaderboard();

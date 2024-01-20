@@ -303,5 +303,5 @@ void display_ranking_head()
 {
     select_head();
     for (int i = 0; i < 5; ++i)
-        printf("\nId: %d | Username: %s | Score: %d", ranking[i].id, ranking[i].username, ranking[i].score);
+        printf("Id: %d | Username: %s | Score: %d\n", ranking[i].id, ranking[i].username, ranking[i].score);
 }

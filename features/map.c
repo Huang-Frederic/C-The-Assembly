@@ -85,7 +85,7 @@ char *map()
         sprintf(dayText, "Day %d", day);
         renderMapText(gScreenSurface, dayText, 64, 2, 4.5);
         renderMapText(gScreenSurface, "Please choose your next destination", 32, 2, 1.15);
-        display_score();
+        display_map_score();
 
         // Render maps at centered positions
         for (int i = 0; i < map_occurrence; i++)
@@ -425,7 +425,7 @@ int get_save_day()
     return day;
 }
 
-void display_score()
+void display_map_score()
 {
 
     int player_score = 0;

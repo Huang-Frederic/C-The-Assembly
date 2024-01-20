@@ -8,7 +8,7 @@ const int SCREEN_HEIGHT = 720;
 const char *selectedFont = "resource/font/upheavtt.TTF";
 
 // Windows Title
-const char *WINDOW_TITLE = "Slay the Assembly";
+const char *WINDOW_TITLE = "C the Assembly";
 // The window we'll be rendering to
 SDL_Window *gWindow = NULL;
 // The surface contained by the window
