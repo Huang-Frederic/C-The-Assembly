@@ -58,7 +58,7 @@ void save_camp()
     }
     else
     {
-        fscanf(save_file, "%d %d %s %d %d %d %d", &save.deck_size, &save.day, save.player_name, &save.difficulty, &save.hp, &save.max_hp, &save.max_energy);
+        fscanf(save_file, "%d %d %s %d %d %d %d %d", &save.deck_size, &save.day, save.player_name, &save.difficulty, &save.hp, &save.max_hp, &save.max_energy, &save.score);
         char deck[save.deck_size][30];
         for (int i = 0; i < save.deck_size; i++)
         {
@@ -68,6 +68,7 @@ void save_camp()
 
         // Apply the changes
         save.hp = save.hp + (save.max_hp * 0.25) > save.max_hp ? save.max_hp : save.hp + (save.max_hp * 0.25);
+        save.score += 20 + (20 * (save.day * 0.05));
         save.day++;
 
         // write to file
@@ -79,7 +80,7 @@ void save_camp()
         }
         else
         {
-            fprintf(save_file, "%d\n%d\n%s\n%d\n%d\n%d\n%d\n", save.deck_size, save.day, save.player_name, save.difficulty, save.hp, save.max_hp, save.max_energy);
+            fprintf(save_file, "%d\n%d\n%s\n%d\n%d\n%d\n%d\n%d\n", save.deck_size, save.day, save.player_name, save.difficulty, save.hp, save.max_hp, save.max_energy, save.score);
             for (int i = 0; i < save.deck_size; i++)
             {
                 fprintf(save_file, "%s\n", deck[i]);
@@ -179,11 +180,6 @@ char *get_treasure_card()
 
 void save_treasure(struct Treasure treasure)
 {
-    // TODO
-    printf("Treasure Energy: %d\n", treasure.energy);
-    printf("Treasure Card: %s\n", treasure.card);
-    printf("Treasure If No Energy: %s\n", treasure.if_no_energy_card);
-
     display_treasure(treasure);
 
     struct Save save;
@@ -205,7 +201,7 @@ void save_treasure(struct Treasure treasure)
     }
     else
     {
-        fscanf(save_file, "%d %d %s %d %d %d %d", &save.deck_size, &save.day, save.player_name, &save.difficulty, &save.hp, &save.max_hp, &save.max_energy);
+        fscanf(save_file, "%d %d %s %d %d %d %d %d", &save.deck_size, &save.day, save.player_name, &save.difficulty, &save.hp, &save.max_hp, &save.max_energy, &save.score);
         char deck[save.deck_size][30];
         for (int i = 0; i < save.deck_size; i++)
         {
@@ -215,6 +211,7 @@ void save_treasure(struct Treasure treasure)
 
         // Apply the changes
         save.max_energy = save.max_energy + treasure.energy > 28 ? 28 : save.max_energy + treasure.energy;
+        save.score += 10 + (10 * (save.day * 0.05));
         save.day++;
         int new_cards = treasure.if_no_energy_card == NULL ? 1 : 2;
         save.deck_size = save.deck_size + new_cards;
@@ -228,7 +225,7 @@ void save_treasure(struct Treasure treasure)
         }
         else
         {
-            fprintf(save_file, "%d\n%d\n%s\n%d\n%d\n%d\n%d\n", save.deck_size, save.day, save.player_name, save.difficulty, save.hp, save.max_hp, save.max_energy);
+            fprintf(save_file, "%d\n%d\n%s\n%d\n%d\n%d\n%d\n%d\n", save.deck_size, save.day, save.player_name, save.difficulty, save.hp, save.max_hp, save.max_energy, save.score);
             for (int i = 0; i < save.deck_size - new_cards; i++)
             {
                 fprintf(save_file, "%s\n", deck[i]);

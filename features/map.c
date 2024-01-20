@@ -14,7 +14,7 @@ char *map()
         "Camp",
         "Boss",
     };
-    char countries[5][20] = {"France", "Usa", "China", "Korea", "Japan"};
+    char countries[5][20] = {"France", "USA", "China", "Korea", "Japan"};
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
     SDL_Surface *background = load_Background_Media_Map(background_image);
@@ -28,7 +28,7 @@ char *map()
 
     // Assuming all maps have the same width
     int mapWidth = maps[0]->w;
-    int spacing = 100;
+    int spacing = 200;
 
     for (int i = 0; i < map_occurrence; i++)
     {
@@ -85,6 +85,7 @@ char *map()
         sprintf(dayText, "Day %d", day);
         renderMapText(gScreenSurface, dayText, 64, 2, 4.5);
         renderMapText(gScreenSurface, "Please choose your next destination", 32, 2, 1.15);
+        display_score();
 
         // Render maps at centered positions
         for (int i = 0; i < map_occurrence; i++)
@@ -104,7 +105,7 @@ char *map()
             strcpy(title_chosen[i], map_chosen[i]);
             addSpaceBeforeUppercase(title_chosen[i]);
 
-            int textX = mapX + (maps[i]->w - textWidth) / 2;
+            int textX = mapX + (maps[i]->w - textWidth) / 2 - 20;
             int textY = mapY + maps[i]->h + 20;
 
             // Check if the mouse is inside the map area
@@ -123,7 +124,6 @@ char *map()
         }
 
         faded = FadeEffect(faded, 0);
-
         // Update the surface
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -423,4 +423,40 @@ int get_save_day()
     fclose(save);
     printf("Day: %d\n", day);
     return day;
+}
+
+void display_score()
+{
+
+    int player_score = 0;
+
+    FILE *save_file = fopen("data/save.txt", "r");
+    if (save_file == NULL)
+    {
+        printf("Error opening file the save file during map!\n");
+        close_SDL();
+    }
+    else
+    {
+        fscanf(save_file, "%*d %*d %*s %*d %*d %*d %*d %d", &player_score);
+        fclose(save_file);
+    }
+
+    // renderCombatText("Click to open the chest", 430, gScreenSurface->h - 200, 32);
+    // void renderCombatText(const char *text, int x, int y, int font_size)
+    char text[100];
+    sprintf(text, "Score : %d", player_score);
+
+    loadFont(selectedFont, 32);
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Surface *message = TTF_RenderText_Solid(font, text, textColor);
+    int x = gScreenSurface->w - message->w - 30;
+    int y = 20;
+
+    if (message != NULL)
+    {
+        SDL_Rect textRect = {x, y, 0, 0};
+        SDL_BlitSurface(message, NULL, gScreenSurface, &textRect);
+        SDL_FreeSurface(message);
+    }
 }

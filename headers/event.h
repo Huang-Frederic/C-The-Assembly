@@ -1,15 +1,5 @@
 #ifndef EVENT
 #define EVENT
-struct Save
-{
-    int deck_size;
-    int day;
-    char player_name[30];
-    int difficulty;
-    int hp;
-    int max_hp;
-    int max_energy;
-};
 
 struct Treasure
 {

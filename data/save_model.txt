@@ -1,20 +1,21 @@
 // Deck Size
 // Day 
-//Player name
+// Player name
 // Difficulty (-1 = EASY, 0 = NORMAL, 1 = HARD)
 // HP
 // MaxHP
 // MaxEnergy = 28
+// Score = 0
 Card_1
 Card_2
 ...
 
 PENSE BETE PROJET C :
 
-// Handle les points pour les scores
-
-Faire Win 
 Faire Lose
+- Sprite du perso vous avez perdu 
+- Score affiché en grand 
+- (affiche le leaderboard ? (+ Message pr dire t'es cbème dans le classement et t'es à combien de pt du top 5 ?))
+- Delete Save
 
-Bug affichage sur les annonces de cartes qui coutent trop cher
 
