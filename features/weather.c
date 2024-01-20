@@ -1,6 +1,6 @@
 // Using https://www.weatherapi.com/ API
 
-#include "weather.h"
+#include "../headers/weather.h"
 
 /* callback for curl fetch */
 size_t curl_callback (void *contents, size_t size, size_t nmemb, void *userp) {

@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
-#include <json-c/json.h>
-#include <curl/curl.h>
 
 /* holder for curl fetch */
 struct curl_fetch_st {

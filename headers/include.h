@@ -15,4 +15,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <sqlite3.h>
+#include <json-c/json.h>
+#include <curl/curl.h>
 #endif // INCLUDES
