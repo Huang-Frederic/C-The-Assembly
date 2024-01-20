@@ -187,7 +187,7 @@ int get_weather_desc(char *weather, char *country) {
 
     parse_weather(weather, json_object_to_json_string(json));
     
-    printf("Weather : %s", weather);
+    // printf("Weather : %s", weather);
     /* exit */
     return 0;
 }
@@ -205,9 +205,9 @@ void parse_weather(char *weather, const char *json_string) {
 }
 
 void get_weather_code(struct Weather *weather) {
-    if (strstr(weather->description, "Sunny") == 0 || strstr(weather->description, "Clear") == 0)
+    if (strstr(weather->description, "Sunny") != NULL || strstr(weather->description, "Clear") != NULL)
         weather->code = 2;
-    else if (strstr(weather->description, "Snow") == 0)
+    else if (strstr(weather->description, "Snow") != NULL)
         weather->code = 1;
     else
         weather->code = 0;
@@ -215,7 +215,7 @@ void get_weather_code(struct Weather *weather) {
 
 void get_weather(struct Weather *weather, char *country) {
     get_weather_desc(weather->description, country);
-    get_weather_code(&weather);
+    get_weather_code(weather);
 }
 
 
@@ -223,5 +223,5 @@ void get_weather(struct Weather *weather, char *country) {
 int main(int argc, char argv[]) {
     struct Weather weather;
     get_weather(&weather, "Japan");
-
+    printf("Weather: %s | Code: %d", weather.description, weather.code);
 }
