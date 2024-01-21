@@ -5,7 +5,7 @@
 // Screen dimension constants
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
-const char *selectedFont = "resource/font/upheavtt.TTF";
+const char *selectedFont = "data/font/upheavtt.TTF";
 
 // Windows Title
 const char *WINDOW_TITLE = "C the Assembly";

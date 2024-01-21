@@ -12,4 +12,29 @@ Card_2
 
 PENSE BETE PROJET C :
 
-Mettre un hover effect sur difficulties
+TUTO:
+
+1. Histoire
+
+2. Expliquer le système de jour 
+-> Chaque jour choisir une destination.
+-> Weather effect en fonction de la destination
+-> Chaque jour, les monstres deviennent 5% plus fort (Toutes les valeurs fixes multipliés par 5%)
+-> L'énergie disponible que dans les treasure avec un maximum de 28
+-> Les camps heal 75%
+
+3. Expliquer le système de combat: 
+-> Concept de cartes et de deck, cartes avec coût.
+-> A la fin du tour, ca remet dans le deck et ca repioche 5 cartes aléatoires.
+-> Gagne des pv et des cartes à chaque monstres
+-> Les différents effets
+
+4. Scoring
+- Tu gagnes plus de points en fonction du danger des destinations :
+    // Common +100
+    // Elite +300
+    // Boss +1000
+    // Camp + 20
+    // Treasure + 10
+    -> Les points gagnés augmente de 5% par jour.
+- Quand tu perds, ton score est sauvegarde et tu peux te comparer à tes précédents records.

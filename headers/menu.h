@@ -1,4 +1,4 @@
-const char *FONT_NAME = "resource/font/upheavtt.ttf";
+const char *FONT_NAME = "data/font/upheavtt.ttf";
 const int FONT_NORMAL = 40;
 const int FONT_HOVER = 60;
 
@@ -23,10 +23,8 @@ void clear_score();
 void display_history();
 void SurfaceTheRender(int FadeType, int Clear_Render);
 bool create_menu_texts();
-bool create_score_texts(char (*board)[200]);
 void display_menu();
 void check_save();
-void generate_leaderboard(char (*board)[200]);
 void display_score();
 bool load_menu_background(char *img_path);
 void display_new_game();
@@ -37,6 +35,7 @@ void display_difficulties(char *username);
 bool init_save(struct Save *save);
 bool create_save(int difficulty, char *username);
 bool create_save_file(const struct Save save);
+bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Texture **DifficultyTexture, SDL_Rect *DifficultyRect, int x, int ishover);
 bool create_difficulties();
 void start_game();
 

@@ -105,7 +105,7 @@ char *map()
             strcpy(title_chosen[i], map_chosen[i]);
             addSpaceBeforeUppercase(title_chosen[i]);
 
-            int textX = mapX + (maps[i]->w - textWidth) / 2 - 20;
+            int textX = mapX + (maps[i]->w - textWidth) / 2;
             int textY = mapY + maps[i]->h + 20;
 
             // Check if the mouse is inside the map area

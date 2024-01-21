@@ -5,7 +5,7 @@ bool load_menu_background(char *img_path)
     BackgroundImg = IMG_Load(img_path);
     if (!BackgroundImg)
     {
-        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.jpg", SDL_GetError());
+        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.png", SDL_GetError());
         return false;
     }
 
@@ -85,7 +85,7 @@ bool create_difficulty_text(const char *Message, int FONT_SIZE, SDL_Texture **Te
     return true;
 }
 
-bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Texture **DifficultyTexture, SDL_Rect *DifficultyRect, int x)
+bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Texture **DifficultyTexture, SDL_Rect *DifficultyRect, int x, int ishover)
 {
     char path[40] = {"data/difficulties/\0"};
     strcat(path, difficulty);
@@ -103,7 +103,7 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
         return false;
     }
     DifficultyRect->x = x;
-    DifficultyRect->y = SCREEN_HEIGHT / 2 - 100;
+    DifficultyRect->y = ishover ? SCREEN_HEIGHT / 2 - 150 : SCREEN_HEIGHT / 2 - 100;
     DifficultyRect->w = DifficultySurface->w;
     DifficultyRect->h = DifficultySurface->h;
     SDL_FreeSurface(DifficultySurface);
@@ -149,8 +149,8 @@ int is_polling_event_menu()
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect3))
                 {
-                    display_score();
                     menu_event = 4;
+                    return 1;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect4))
@@ -176,56 +176,6 @@ int is_polling_event_menu()
             else if (SDL_PointInRect(&mousePosition, &TextRect4))
                 create_text("Leave", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1);
             break;
-        }
-    }
-    return 0;
-}
-
-bool is_polling_event_score()
-{
-    while (SDL_PollEvent(&WindowEvent))
-    {
-        switch (WindowEvent.type)
-        {
-        case SDL_QUIT:
-            clear_score();
-            // close_SDL();
-            return false;
-
-            // case SDL_MOUSEBUTTONDOWN:
-            //     if (WindowEvent.button.button == SDL_BUTTON_LEFT)
-            //     {
-            //         mousePosition.x = WindowEvent.motion.x;
-            //         mousePosition.y = WindowEvent.motion.y;
-
-            //         if (SDL_PointInRect(&mousePosition, &TextRect0))
-            //             printf("\nContinuer la partie");
-            //         else if (SDL_PointInRect(&mousePosition, &TextRect1))
-            //             printf("\nNouvelle Partie");
-            //         else if (SDL_PointInRect(&mousePosition, &TextRect2))
-            //             printf("\nOptions");
-            //         else if (SDL_PointInRect(&mousePosition, &TextRect3))
-            //             printf("\nScores");
-            //         else if (SDL_PointInRect(&mousePosition, &TextRect4))
-            //             return false;
-            //     }
-
-            // case SDL_MOUSEMOTION:
-            //     mousePosition.x = WindowEvent.motion.x;
-            //     mousePosition.y = WindowEvent.motion.y;
-            //     create_menu_texts();
-
-            //     if (SDL_PointInRect(&mousePosition, &TextRect0))
-            //         create_text("Continuer la partie", FONT_HOVER, &TextTexture0, &TextRect0, -25);
-            //     else if (SDL_PointInRect(&mousePosition, &TextRect1))
-            //         create_text("Nouvelle Partie", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50);
-            //     else if (SDL_PointInRect(&mousePosition, &TextRect2))
-            //         create_text("Options", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h);
-            //     else if (SDL_PointInRect(&mousePosition, &TextRect3))
-            //         create_text("Scores", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h);
-            //     else if (SDL_PointInRect(&mousePosition, &TextRect4))
-            //         create_text("Quitter", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h);
-            //     break;
         }
     }
     return 0;
@@ -301,8 +251,21 @@ bool is_polling_event_difficulties(char *username)
                     return false;
                 }
             }
+        case SDL_MOUSEMOTION:
+            mousePosition.x = WindowEvent.motion.x;
+            mousePosition.y = WindowEvent.motion.y;
+            create_difficulties();
+
+            if (SDL_PointInRect(&mousePosition, &EasyRect))
+                create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 250, 1);
+            else if (SDL_PointInRect(&mousePosition, &NormalRect))
+                create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 550, 1);
+            else if (SDL_PointInRect(&mousePosition, &HardRect))
+                create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 850, 1);
+            break;
         }
     }
+
     return true;
 }
 
@@ -377,11 +340,11 @@ bool create_menu_texts()
 
 bool create_difficulties()
 {
-    if (!create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 250))
+    if (!create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 250, 0))
         return false;
-    if (!create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 550))
+    if (!create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 550, 0))
         return false;
-    if (!create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 850))
+    if (!create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 850, 0))
         return false;
     if (!create_difficulty_text("Easy", 50, &TextTexture0, &TextRect0, EasyRect.x + EasyRect.w / 2))
         return false;
@@ -392,41 +355,10 @@ bool create_difficulties()
     return true;
 }
 
-void generate_leaderboard(char (*board)[200])
-{
-    char username_space[5][70] = {{"\0"}, {"\0"}, {"\0"}, {"\0"}, {"\0"}};
-
-    select_head();
-
-    for (int i = 0; i < 5; ++i)
-    {
-        for (int j = 0; j < 70 - 3 * strlen(ranking[i].username); ++j)
-            strcat(username_space[i], " ");
-        sprintf(board[i], "%d.    %s%s      %d", i + 1, ranking[i].username, username_space[i], ranking[i].score);
-    }
-}
-
-bool create_score_texts(char (*board)[200])
-{
-    if (!create_text("LEADERBOARD", FONT_NORMAL, &TextTexture0, &TextRect0, -20, 1))
-        return false;
-    if (!create_text(board[0], FONT_NORMAL, &TextTexture1, &TextRect1, TextRect0.y + TextRect0.h + 40, 0))
-        return false;
-    if (!create_text(board[1], FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 0))
-        return false;
-    if (!create_text(board[2], FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 0))
-        return false;
-    if (!create_text(board[3], FONT_NORMAL, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 0))
-        return false;
-    if (!create_text(board[4], FONT_NORMAL, &TextTexture5, &TextRect5, TextRect4.y + TextRect4.h, 0))
-        return false;
-    return true;
-}
-
 void display_menu()
 {
     check_save();
-    if (!load_menu_background("data/menu/menu.jpg"))
+    if (!load_menu_background("data/menu/menu.png"))
     {
         printf("\nFailed to load media!");
         close_SDL();
@@ -452,36 +384,58 @@ void display_menu()
     case 3:
         display_history();
         break;
+    case 4:
+        display_score();
+        break;
     }
 }
 
 void display_score()
 {
-    // char board[5][200];
-    // generate_leaderboard(board);
-    // create_score_texts(board);
-    // while (is_polling_event_score())
-    // {
-    //     render();
-    // }
-
     // Get the Leaderboard position
+
     select_head();
     int clicked = 0;
+    char ScoreInChar[15];
     SDL_Event e;
 
     renderCombatText("LeaderBoard", 500, 120, 48);
     for (int i = 0; i < 5; i++)
     {
-        // snprintf(ScoreInChar, sizeof(ScoreInChar), "%d", ranking[j].score);
+        snprintf(ScoreInChar, sizeof(ScoreInChar), "%d", ranking[i].score);
         renderCombatText(ScoreInChar, 820, 200 + (i * 70), 32);
         renderCombatText(ranking[i].username, 420, 200 + (i * 70), 32);
     }
+    SDL_UpdateWindowSurface(gWindow);
+
+    FadeEffect(0, 0);
+    SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 170, gScreenSurface->h - 150, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
+
+    while (clicked == 0)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                printf("\n\nQuiting ...\n\n");
+                close_SDL();
+            }
+            if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                clicked = 1;
+            }
+        }
+    }
+
+    FadeEffect(0, 1);
 }
 
 void display_new_game()
 {
-    if (!load_menu_background("data/menu/history.jpg"))
+    if (!load_menu_background("data/menu/history.png"))
     {
         printf("\nFailed to load media!");
         close_SDL();
@@ -503,6 +457,10 @@ void display_history()
     SDL_UpdateWindowSurface(gWindow);
 
     FadeEffect(0, 0);
+    SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 170, gScreenSurface->h - 150, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
 
     while (SDL_PollEvent(&e) != 0 || clicked == 0)
     {
@@ -560,14 +518,14 @@ void display_tuto(int num)
     switch (num)
     {
     case 1:
-        if (!load_menu_background("data/menu/tutoriel_1.jpg"))
+        if (!load_menu_background("data/menu/tutoriel_1.png"))
         {
             printf("\nFailed to load media!");
             close_SDL();
         }
         break;
     case 2:
-        if (!load_menu_background("data/menu/tutoriel_2.jpg"))
+        if (!load_menu_background("data/menu/tutoriel_2.png"))
         {
             printf("\nFailed to load media!");
             close_SDL();
@@ -583,7 +541,7 @@ void display_tuto(int num)
 void display_difficulties(char *username)
 {
     ;
-    if (!load_menu_background("data/menu/difficulties.jpg"))
+    if (!load_menu_background("data/menu/difficulties.png"))
     {
         printf("\nFailed to load media!");
         close_SDL();
