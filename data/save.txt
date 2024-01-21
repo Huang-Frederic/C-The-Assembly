@@ -5,7 +5,7 @@ Hisshiden
 =======
 10
 1
-ARKAYZ
+FRED
 0
 100
 100
