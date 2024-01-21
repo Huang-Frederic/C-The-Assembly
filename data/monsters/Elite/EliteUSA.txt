@@ -2,6 +2,6 @@ ESI
 150
 __Monster__Gangbyte
 __Monster__Binary-Assault
-2
+0
 __Monster__Retaliate
-4
+3

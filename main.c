@@ -94,11 +94,11 @@ int main(int argc, char *args[])
     init();
 
     // delete_all();
-    // insert(1, "Gautier");
-    // insert(2, "Hisshiden");
-    // insert(3, "Poukimoune");
-    // insert(4, "Franck");
-    // insert(5, "Zobobo");
+    // insert(100, "Gautier");
+    // insert(200, "Hisshiden");
+    // insert(300, "Stephane");
+    // insert(400, "Franck");
+    // insert(500, "Donnesh");
 
     // display_menu();
 

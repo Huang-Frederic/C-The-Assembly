@@ -812,7 +812,7 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
                 {
                 case 0 ... 75:
                     SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
-                    sprintf(message, "You have dealt %d dammages", card.damage);
+                    sprintf(message, "You dealt %d damages", card.damage);
                     int textWidth = strlen(message) * 18;
                     int xCentered = (gScreenSurface->w - textWidth) / 2;
 
@@ -1779,7 +1779,8 @@ void combat_lost()
     lose_display_score(screenCopy, &save);
     lose_display_leaderboard(screenCopy, &save);
 
-    // delete_save();
+    FadeEffect(0, 1);
+    delete_save();
 
     SDL_FreeSurface(screenCopy);
     SDL_FreeSurface(overlay);
@@ -1845,7 +1846,7 @@ void lose_display_score(SDL_Surface *screenCopy, struct Save *save)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
         renderMap(load_Pathed_Media("Player", 2.2), i, gScreenSurface->h / 4, 0, 0);
-        renderCombatText(message, i + 20, 200, 32);
+        renderCombatText(message, i - 50, 200, 32);
         SDL_UpdateWindowSurface(gWindow);
     }
 
@@ -1856,21 +1857,15 @@ void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save)
 {
     // Get the Leaderboard position
     select_head();
-    /////////////////////////////
-    printf("Leaderboard 2 :\n");
-    for (int i = 0; i < 5; i++)
-    {
-        printf("%d - %s : %d\n", i + 1, ranking[i].username, ranking[i].score);
-    }
-    /////////////////////////////
     char message[100] = "You are not in the Leaderboard";
-    int score_diff = ranking[5].score - save->score;
+    int score_diff = ranking[4].score - save->score;
     char message_diff[100];
-    sprintf(message_diff, "You are %d points from the Top 5", score_diff);
     int clicked = 0;
     SDL_Event e;
     char ScoreInChar[15];
     int player_ranking = 6;
+
+    sprintf(message_diff, "You are %d points from the Top 5", score_diff);
 
     for (int i = 0; i < 5; i++)
     {
@@ -1881,37 +1876,43 @@ void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save)
             break;
         }
     }
+
+    // Update bdd
     insert(save->score, save->player_name);
     select_head();
-    /////////////////////////////
-    printf("Leaderboard 1 :\n");
-    for (int i = 0; i < 5; i++)
-    {
-        printf("%d - %s : %d\n", i + 1, ranking[i].username, ranking[i].score);
-    }
-    printf("%s\n", message);
-    if (score_diff >= 0)
-        printf("%s\n", message_diff);
-    /////////////////////////////
 
     // Display leaderboard
     for (int i = -200; i <= 420; i += 5)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
+        renderCombatText("LeaderBoard", i + 80, 120, 48);
         for (int j = 0; j < 5; j++)
         {
             snprintf(ScoreInChar, sizeof(ScoreInChar), "%d", ranking[j].score);
             if (player_ranking == j)
             {
-                renderMap(load_Pathed_Media("Player", 0.6), i - 200, +(j * 70), 0, 0);
+                renderMap(load_Pathed_Media("Player", 0.5), i - 100, 160 + (j * 70), 0, 0);
             }
             renderCombatText(ranking[j].username, i, 200 + (j * 70), 32);
             renderCombatText(ScoreInChar, i + 400, 200 + (j * 70), 32);
+        }
+        renderMap(load_Pathed_Media("Player", 0.5), i - 150, gScreenSurface->h - 160, 0, 0);
+        if (player_ranking < 6)
+        {
+
+            renderCombatText(message, i - 50, gScreenSurface->h - 120, 32);
+        }
+        else
+        {
+            renderCombatText(message_diff, i - 50, gScreenSurface->h - 120, 32);
         }
 
         SDL_UpdateWindowSurface(gWindow);
     }
     SDL_Delay(600);
+
+    renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 170, gScreenSurface->h - 150, 0, 0);
+    SDL_UpdateWindowSurface(gWindow);
 
     while (clicked == 0)
     {
@@ -1934,6 +1935,14 @@ void delete_save()
 {
     const char *filename = "data/save.txt";
 
+    // Display the beginning of the save screen
+    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+    FadeEffect(0, 0);
+    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    SDL_UpdateWindowSurface(gWindow);
+
     // Check if the file exists
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -1954,4 +1963,10 @@ void delete_save()
         printf("Unable to delete the file\n");
         close_SDL();
     }
+
+    // Display the end of the save screen
+    SDL_Delay(500);
+    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+    SDL_UpdateWindowSurface(gWindow);
+    FadeEffect(0, 1);
 }
