@@ -1,6 +1,16 @@
+<<<<<<< HEAD
 17
 3
 Hisshiden
+=======
+10
+1
+ARKAYZ
+0
+100
+100
+5
+>>>>>>> feature/new-game
 0
 115
 115

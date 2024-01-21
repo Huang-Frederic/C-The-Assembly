@@ -25,7 +25,7 @@ void init()
     else
     {
         // Create window
-        gWindow = SDL_CreateWindow("Slay The Assembly", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+        gWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
         if (gWindow == NULL)
         {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -33,12 +33,20 @@ void init()
         }
         else
         {
+            Renderer = SDL_CreateRenderer(gWindow, -1, 0);
+            if (!Renderer)
+            {   printf("\nError Renderer : %s", SDL_GetError());
+                printf("\nThere was a problem creating the renderer.");
+                close_SDL();
+            }
             // Get window surface
             gScreenSurface = SDL_GetWindowSurface(gWindow);
             SDL_Surface *icon = IMG_Load("data/Logo.png");
             SDL_SetWindowIcon(gWindow, icon);
         }
+        
     }
+   
 }
 
 bool loadFont(const char *selectedFont, int font_size)
@@ -54,6 +62,7 @@ bool loadFont(const char *selectedFont, int font_size)
 
 void close_SDL()
 {
+    SDL_DestroyRenderer(Renderer);
     // Destroy window
     SDL_DestroyWindow(gWindow);
     gWindow = NULL;
