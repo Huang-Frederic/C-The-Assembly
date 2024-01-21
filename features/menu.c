@@ -489,6 +489,16 @@ void display_difficulties(char *username) {;
     {
         render_difficulties();
     }
+    start_game();
+}
+
+void start_game() {
+    while (1)
+    {
+        char *selected_map = map();
+        printf("Selected: %s\n\n", selected_map);
+        event(selected_map);
+    }
 }
 
 bool init_save(struct Save *save) {

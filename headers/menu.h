@@ -36,6 +36,7 @@ bool init_save(struct Save *save);
 bool create_save(int difficulty, char *username);
 bool create_save_file (const struct Save save);
 bool create_difficulties();
+void start_game();
 
 int save = 0;
 int menu_event = 0;
