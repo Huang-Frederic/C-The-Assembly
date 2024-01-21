@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-17
-3
-Hisshiden
-=======
-10
+12
+2
+AZE
+0
 1
-FRED
-0
-100
-100
+118
 5
->>>>>>> feature/new-game
-0
-115
-115
-5
-401
+105
 __Player__Pointer-Pistol-Shot
 __Player__Pointer-Pistol-Shot
 __Player__C-Bang-Pointer-Pop
@@ -26,10 +16,5 @@ __Player__Celerity-Compiler
 __Player__Code-Breach
 __Player__Lethal-Remedy-Drop
 __Player__HemoHustle-Nudge
-__Player__For-Science
-__Player__For-Science
-__Player__For-Science
-__Player__For-Science
-__Player__For-Science
-__Player__C-Bang-Pointer-Pop
-__Player__Pointer-Pistol-Shot
+__Player__C-Friendly
+__Player__HemoHustle-Nudge

@@ -12,9 +12,6 @@
 
 int main(int argc, char *args[])
 {
-    // struct Save save;
-    // init_save(&save);
-    // create_save(save);
     init();
 
     // delete_all();
@@ -23,16 +20,11 @@ int main(int argc, char *args[])
     // insert(300, "Stephane");
     // insert(400, "Franck");
     // insert(500, "Donnesh");
+    while (1)
+    {
+        display_menu();
+    }
 
-    display_menu();
-
-    // while (1)
-    // {
-    //     char *selected_map = map();
-    //     printf("Selected: %s\n\n", selected_map);
-    //     event(selected_map);
-    // }
-
-    // close_SDL();
+    close_SDL();
     return 0;
 }

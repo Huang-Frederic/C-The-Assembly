@@ -810,7 +810,7 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
                 int dodge = rand() % 100;
                 switch (dodge)
                 {
-                case 0 ... 75:
+                case 0 ... 90:
                     SDL_BlitSurface(Output_surface, NULL, gScreenSurface, NULL);
                     sprintf(message, "You dealt %d damages", card.damage);
                     int textWidth = strlen(message) * 18;
@@ -830,7 +830,7 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
                         monster->health -= 1;
                     }
                     break;
-                case 76 ... 100:
+                case 91 ... 100:
                     printf("The monster dodged the attack!\n\n");
                     sprintf(message, "The monster dodged the attack!");
                     break;
@@ -998,7 +998,7 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     {
         srand(time(NULL));
         int dodge = rand() % 100;
-        if (player->dodge > 0 && dodge >= 75)
+        if (player->dodge > 0 && dodge >= 90)
         {
             printf("You have dodged the attack!\n\n");
             SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
@@ -1781,6 +1781,7 @@ void combat_lost()
 
     FadeEffect(0, 1);
     delete_save();
+    RETURN_TO_MENU = 1;
 
     SDL_FreeSurface(screenCopy);
     SDL_FreeSurface(overlay);

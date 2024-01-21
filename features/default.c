@@ -1,6 +1,8 @@
 #include "../headers/include.h"
 #include "../headers/default.h"
 
+int RETURN_TO_MENU = 0;
+
 void init()
 {
     // Initialization flag
@@ -35,7 +37,8 @@ void init()
         {
             Renderer = SDL_CreateRenderer(gWindow, -1, 0);
             if (!Renderer)
-            {   printf("\nError Renderer : %s", SDL_GetError());
+            {
+                printf("\nError Renderer : %s", SDL_GetError());
                 printf("\nThere was a problem creating the renderer.");
                 close_SDL();
             }
@@ -44,9 +47,7 @@ void init()
             SDL_Surface *icon = IMG_Load("data/Logo.png");
             SDL_SetWindowIcon(gWindow, icon);
         }
-        
     }
-   
 }
 
 bool loadFont(const char *selectedFont, int font_size)

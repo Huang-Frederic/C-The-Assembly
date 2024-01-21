@@ -20,8 +20,8 @@ void input()
     {
         while (SDL_PollEvent(&e) != 0)
         {
-            
-            switch(e.type)
+
+            switch (e.type)
             {
             case SDL_QUIT:
                 close_SDL();
@@ -40,14 +40,10 @@ void input()
                     username[size - 1] = '\0';
                     user_len--;
                 }
-                else if (strcmp(SDL_GetKeyName(e.key.keysym.sym), "Space") == 0)
-                {
-                    sprintf(username, "%s%s", username, " ");
-                    user_len++;
-                }
                 else if (strcmp(SDL_GetKeyName(e.key.keysym.sym), "Return") == 0)
                 {
-                    if (strpbrk(username, check_char) != NULL) {
+                    if (strpbrk(username, check_char) != NULL)
+                    {
                         clicked = 1;
                         display_difficulties(username);
                     }
