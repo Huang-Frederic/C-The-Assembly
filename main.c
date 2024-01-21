@@ -19,26 +19,7 @@
 //     return true;
 // }
 
-// bool load_media()
-// {
 
-//     // Load splash image
-//     BackgroundImg = IMG_Load("resource/img/menu.jpg");
-//     if (!BackgroundImg)
-//     {
-//         printf("\nUnable to load image %s! SDL Error: %s\n", "menu.jpg", SDL_GetError());
-//         return false;
-//     }
-
-//     ImgTexture = SDL_CreateTextureFromSurface(Renderer, BackgroundImg);
-//     if (!ImgTexture)
-//     {
-//         printf("\nUnable to create texture from surface.");
-//         return false;
-//     }
-
-//     return true;
-// }
 
 // void clear_window()
 // {
@@ -100,15 +81,15 @@ int main(int argc, char *args[])
     // insert(4, "Franck");
     // insert(5, "Zobobo");
 
-    // display_menu();
+    display_menu();
 
-    while (1)
-    {
-        char *selected_map = map();
-        printf("Selected: %s\n\n", selected_map);
-        event(selected_map);
-    }
+    // while (1)
+    // {
+    //     char *selected_map = map();
+    //     printf("Selected: %s\n\n", selected_map);
+    //     event(selected_map);
+    // }
 
-    close_SDL();
+    // close_SDL();
     return 0;
 }

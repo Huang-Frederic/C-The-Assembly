@@ -5,6 +5,7 @@ const int FONT_HOVER = 60;
 // Event capturer from SDL Window.
 SDL_Color TextColor = {255, 255, 255, 0}; // White SDL color.
 TTF_Font *Font;                           // The font to be loaded from the ttf file.
+SDL_Surface *menuSurface;
 SDL_Surface *TextSurface;                 // The surface necessary to create the font texture.
 SDL_Surface *BackgroundImg = NULL;
 SDL_Texture *ImgTexture;                                                                              // The image we will load and show on the screen                                    // The surface contained by the window
@@ -23,6 +24,9 @@ bool display_menu();
 void check_save();
 void generate_leaderboard(char (*board)[200]);
 bool display_score();
+bool load_menu_background(char *img_path);
+bool display_new_game();
+bool load_new_game_background(char *img_path);
 
 int save = 0;
 

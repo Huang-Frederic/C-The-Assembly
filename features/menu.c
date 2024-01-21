@@ -1,5 +1,40 @@
-#include "../headers/include.h"
 #include "../headers/menu.h"
+
+bool load_menu_background(char *img_path)
+{
+    BackgroundImg = IMG_Load(img_path);
+    if (!BackgroundImg)
+    {
+        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.jpg", SDL_GetError());
+        return false;
+    }
+
+    ImgTexture = SDL_CreateTextureFromSurface(Renderer, BackgroundImg);
+    if (!ImgTexture)
+    {
+        printf("\nUnable to create texture from surface.");
+        return false;
+    }
+
+    return true;
+}
+
+bool load_new_game_background(char *img_path)
+{
+    BackgroundImg = IMG_Load(img_path);
+    if (!BackgroundImg)
+    {
+        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.jpg", SDL_GetError());
+        return false;
+    }
+
+    SDL_BlitSurface(BackgroundImg, NULL, gScreenSurface, NULL);
+
+    //Update the surface
+	SDL_UpdateWindowSurface( gWindow );
+
+    return true;
+}
 
 bool create_text(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, SDL_Rect *TextRect, int y, int middle)
 {
@@ -42,6 +77,9 @@ bool is_polling_event_menu()
         {
         case SDL_QUIT:
             return false;
+            clear_menu();
+            close_SDL();
+            break;
 
         case SDL_MOUSEBUTTONDOWN:
             if (WindowEvent.button.button == SDL_BUTTON_LEFT)
@@ -51,14 +89,20 @@ bool is_polling_event_menu()
 
                 if (SDL_PointInRect(&mousePosition, &TextRect0))
                     printf("\nContinuer la partie");
-                else if (SDL_PointInRect(&mousePosition, &TextRect1))
-                    printf("\nNouvelle Partie");
+                else if (SDL_PointInRect(&mousePosition, &TextRect1)) {
+                    clear_menu();
+                    display_new_game();
+                }
                 else if (SDL_PointInRect(&mousePosition, &TextRect2))
                     printf("\nOptions");
                 else if (SDL_PointInRect(&mousePosition, &TextRect3))
                     display_score();
-                else if (SDL_PointInRect(&mousePosition, &TextRect4))
+                else if (SDL_PointInRect(&mousePosition, &TextRect4)) {
+                    clear_menu();
+                    close_SDL();
                     return false;
+                }
+                    
             }
 
         case SDL_MOUSEMOTION:
@@ -67,15 +111,15 @@ bool is_polling_event_menu()
             create_menu_texts();
 
             if (SDL_PointInRect(&mousePosition, &TextRect0))
-                create_text("Continuer la partie", FONT_HOVER, &TextTexture0, &TextRect0, -25, 1);
+                create_text("Continue the game", FONT_HOVER, &TextTexture0, &TextRect0, -25, 1);
             else if (SDL_PointInRect(&mousePosition, &TextRect1))
-                create_text("Nouvelle Partie", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1);
+                create_text("New game", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1);
             else if (SDL_PointInRect(&mousePosition, &TextRect2))
-                create_text("Options", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
+                create_text("History", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
             else if (SDL_PointInRect(&mousePosition, &TextRect3))
-                create_text("Scores", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1);
+                create_text("Leaderboard", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1);
             else if (SDL_PointInRect(&mousePosition, &TextRect4))
-                create_text("Quitter", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1);
+                create_text("Leave", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1);
             break;
         }
     }
@@ -90,6 +134,7 @@ bool is_polling_event_score()
         {
         case SDL_QUIT:
             clear_score();
+            // close_SDL();
             return false;
 
             // case SDL_MOUSEBUTTONDOWN:
@@ -130,6 +175,20 @@ bool is_polling_event_score()
     }
     return true;
 }
+bool is_polling_event_new_game() {
+     while (SDL_PollEvent(&WindowEvent))
+    {
+        switch (WindowEvent.type)
+        {
+        case SDL_QUIT:
+            clear_score();
+            close_SDL();
+            return false;
+        }
+    }
+}
+
+
 
 void render()
 {
@@ -146,6 +205,14 @@ void render()
     SDL_Delay(10);               // Delay to prevent CPU overhead as suggested by the user `not2qubit`
 }
 
+void render_new_game() {
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
+    SDL_RenderClear(Renderer);
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL); // Paint screen black.
+    SDL_RenderPresent(Renderer); // Render everything that's on the queue.
+    SDL_Delay(10);               // Delay to prevent CPU overhead as suggested by the user `not2qubit`
+}
+
 void check_save()
 {
     FILE *fp = fopen("data/save.txt", "r");
@@ -157,16 +224,16 @@ bool create_menu_texts()
 {
     if (save)
     {
-        if (!create_text("Continuer la partie", FONT_NORMAL, &TextTexture0, &TextRect0, -25, 1))
+        if (!create_text("Continue the game", FONT_NORMAL, &TextTexture0, &TextRect0, -25, 1))
             return false;
     }
-    if (!create_text("Nouvelle Partie", FONT_NORMAL, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1))
+    if (!create_text("New game", FONT_NORMAL, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1))
         return false;
-    if (!create_text("Options", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1))
+    if (!create_text("History", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1))
         return false;
-    if (!create_text("Scores", FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1))
+    if (!create_text("Leaderboard", FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1))
         return false;
-    if (!create_text("Quitter", FONT_NORMAL, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1))
+    if (!create_text("Leave", FONT_NORMAL, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1))
         return false;
     return true;
 }
@@ -209,11 +276,12 @@ bool create_score_texts(char (*board)[200])
 bool display_menu()
 {
     check_save();
-    // if (!load_media())
-    // {
-    //     printf("\nFailed to load media!");
-    //     return false;
-    // }
+    if (!load_menu_background("data/menu/menu.jpg"))
+    {
+        printf("\nFailed to load media!");
+        close_SDL();
+        return false;
+    }
 
     create_menu_texts();
     while (is_polling_event_menu())
@@ -235,6 +303,19 @@ bool display_score()
     return true;
 }
 
+bool display_new_game() {
+    if (!load_menu_background("data/menu/history.jpg"))
+    {
+        printf("\nFailed to load media!");
+        close_SDL();
+        return false;
+    }
+    while (is_polling_event_new_game())
+    {
+        render_new_game();
+    }
+}
+
 void clear_menu()
 {
     SDL_FreeSurface(BackgroundImg);
@@ -250,10 +331,10 @@ void clear_menu()
 
 void clear_score()
 {
-    TextRect0.h = -1;
-    TextRect0.w = -1;
-    TextRect0.x = -1;
-    TextRect0.y = -1;
+    // TextRect0.h = -1;
+    // TextRect0.w = -1;
+    // TextRect0.x = -1;
+    // TextRect0.y = -1;
     SDL_DestroyTexture(TextTexture0);
     SDL_DestroyTexture(TextTexture1);
     SDL_DestroyTexture(TextTexture2);
