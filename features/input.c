@@ -36,6 +36,8 @@ void input()
             switch (e.type)
             {
             case SDL_QUIT:
+                if (display_errors_on)
+                    fprintf(stderr, "Quitting...");
                 close_SDL();
 
             case SDL_KEYDOWN:

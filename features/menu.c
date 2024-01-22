@@ -5,14 +5,16 @@ bool load_menu_background(char *img_path)
     BackgroundImg = IMG_Load(img_path);
     if (!BackgroundImg)
     {
-        printf("\nUnable to load image %s! SDL Error: %s\n", "menu.png", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to load image %s! SDL Error: %s\n", "menu.png", SDL_GetError());
         return false;
     }
 
     ImgTexture = SDL_CreateTextureFromSurface(Renderer, BackgroundImg);
     if (!ImgTexture)
     {
-        printf("\nUnable to create texture from surface.");
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to create texture from surface.");
         return false;
     }
 
@@ -25,21 +27,24 @@ bool create_text(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, 
     TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
     if (!font)
     {
-        printf("\nCouldn't find/init open ttf font.");
+        if (display_errors_on)
+            fprintf(stderr, "\nCouldn't find/init open ttf font.");
         return false;
     }
 
     TextSurface = TTF_RenderText_Solid(font, Message, TextColor);
     if (TextSurface == NULL)
     {
-        printf("\nUnable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to render text! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
 
     *TextTexture = SDL_CreateTextureFromSurface(Renderer, TextSurface);
     if (*TextTexture == NULL)
     {
-        printf("\nUnable to create texture from surface!");
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to create texture from surface!");
         return false;
     }
     TextRect->x = middle ? SCREEN_WIDTH / 2 - TextSurface->w / 2 : 350;
@@ -58,21 +63,24 @@ bool create_difficulty_text(const char *Message, int FONT_SIZE, SDL_Texture **Te
     TTF_Font *font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
     if (!font)
     {
-        printf("\nCouldn't find/init open ttf font.");
+        if (display_errors_on)
+            fprintf(stderr, "\nCouldn't find/init open ttf font.");
         return false;
     }
 
     TextSurface = TTF_RenderText_Solid(font, Message, TextColor);
     if (TextSurface == NULL)
     {
-        printf("\nUnable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to render text! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
 
     *TextTexture = SDL_CreateTextureFromSurface(Renderer, TextSurface);
     if (*TextTexture == NULL)
     {
-        printf("\nUnable to create texture from surface!");
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to create texture from surface!");
         return false;
     }
     TextRect->x = x - TextSurface->w / 2;
@@ -93,13 +101,15 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
     DifficultySurface = IMG_Load(path);
     if (DifficultySurface == NULL)
     {
-        printf("\nUnable to render img! Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to render img! Error: %s\n", SDL_GetError());
         return false;
     }
     *DifficultyTexture = SDL_CreateTextureFromSurface(Renderer, DifficultySurface);
     if (*DifficultyTexture == NULL)
     {
-        printf("\nUnable to create texture from surface!");
+        if (display_errors_on)
+            fprintf(stderr, "\nUnable to create texture from surface!");
         return false;
     }
     DifficultyRect->x = x;
@@ -110,7 +120,7 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
     return true;
 }
 
-int is_polling_event_menu()
+bool is_polling_event_menu()
 {
     while (SDL_PollEvent(&WindowEvent))
     {
@@ -119,7 +129,7 @@ int is_polling_event_menu()
         case SDL_QUIT:
             clear_menu();
             close_SDL();
-            break;
+            return false;
 
         case SDL_MOUSEBUTTONDOWN:
             if (WindowEvent.button.button == SDL_BUTTON_LEFT)
@@ -131,26 +141,26 @@ int is_polling_event_menu()
                 {
                     // Continue
                     menu_event = 1;
-                    return 1;
+                    return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect1))
                 {
                     // NewGame
                     menu_event = 2;
-                    return 1;
+                    return false;
                 }
                 else if (SDL_PointInRect(&mousePosition, &TextRect2))
                 {
                     // History
                     menu_event = 3;
-                    return 1;
+                    return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect3))
                 {
                     menu_event = 4;
-                    return 1;
+                    return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect4))
@@ -178,7 +188,7 @@ int is_polling_event_menu()
             break;
         }
     }
-    return 0;
+    return true;
 }
 
 bool is_polling_event_new_game()
@@ -191,8 +201,10 @@ bool is_polling_event_new_game()
     {
         if (e.type == SDL_QUIT)
         {
-            printf("\n\nQuiting ...\n\n");
+            if (display_errors_on)
+                fprintf(stderr, "\n\nQuiting ...\n\n");
             close_SDL();
+            return false;
         }
         if (e.type == SDL_MOUSEBUTTONDOWN)
         {
@@ -204,7 +216,7 @@ bool is_polling_event_new_game()
     switch (WindowEvent.type)
     {
     case SDL_QUIT:
-        clear_score();
+        clear_menu();
         close_SDL();
         return false;
 
@@ -238,7 +250,7 @@ bool is_polling_event_difficulties(char *username)
         switch (WindowEvent.type)
         {
         case SDL_QUIT:
-            clear_score();
+            clear_menu();
             close_SDL();
             return false;
 
@@ -287,44 +299,44 @@ bool is_polling_event_difficulties(char *username)
 void render()
 {
 
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
     SDL_RenderClear(Renderer);
-    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL); // Paint screen black.
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
     if (save)
     {
         SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
     }
-    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); // Add text to render queue.
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); 
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
     SDL_RenderCopy(Renderer, TextTexture3, NULL, &TextRect3);
     SDL_RenderCopy(Renderer, TextTexture4, NULL, &TextRect4);
     SDL_RenderCopy(Renderer, TextTexture5, NULL, &TextRect5);
-    SDL_RenderPresent(Renderer); // Render everything that's on the queue.
-    SDL_Delay(10);               // Delay to prevent CPU overhead as suggested by the user `not2qubit`
+    SDL_RenderPresent(Renderer); 
+    SDL_Delay(10);               
 }
 
 void render_new_game()
 {
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
     SDL_RenderClear(Renderer);
-    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL); // Paint screen black.
-    SDL_RenderPresent(Renderer);                      // Render everything that's on the queue.
-    SDL_Delay(10);                                    // Delay to prevent CPU overhead as suggested by the user `not2qubit`
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL); 
+    SDL_RenderPresent(Renderer);                      
+    SDL_Delay(10);                                   
 }
 
 void render_difficulties()
 {
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
     SDL_RenderClear(Renderer);
     SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
     SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
-    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); // Add text to render queue.
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); 
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
     SDL_RenderCopy(Renderer, EasyTexture, NULL, &EasyRect);
     SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
     SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
-    SDL_RenderPresent(Renderer); // Render everything that's on the queue.
-    SDL_Delay(10);               // Delay to prevent CPU overhead as suggested by the user `not2qubit`
+    SDL_RenderPresent(Renderer); 
+    SDL_Delay(10);               
 }
 
 void check_save()
@@ -375,7 +387,8 @@ void display_menu()
     check_save();
     if (!load_menu_background("data/menu/menu.png"))
     {
-        printf("\nFailed to load media!");
+        if (display_errors_on)
+            fprintf(stderr, "\nFailed to load media!");
         close_SDL();
     }
 
@@ -383,7 +396,7 @@ void display_menu()
 
     SurfaceTheRender(0, 0);
 
-    while (is_polling_event_menu() == 0)
+    while (is_polling_event_menu())
     {
         render();
     }
@@ -438,7 +451,8 @@ void display_score()
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -455,7 +469,8 @@ void display_new_game()
 {
     if (!load_menu_background("data/menu/history.png"))
     {
-        printf("\nFailed to load media!");
+        if (display_errors_on)
+            fprintf(stderr, "\nFailed to load media!");
         close_SDL();
     }
 
@@ -484,7 +499,8 @@ void display_history()
     {
         if (e.type == SDL_QUIT)
         {
-            printf("\n\nQuiting ...\n\n");
+            if (display_errors_on)
+                fprintf(stderr, "\n\nQuiting ...\n\n");
             close_SDL();
         }
         if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -538,14 +554,16 @@ void display_tuto(int num)
     case 1:
         if (!load_menu_background("data/menu/tutoriel_1.png"))
         {
-            printf("\nFailed to load media!");
+            if (display_errors_on)
+                fprintf(stderr, "\nFailed to load media!");
             close_SDL();
         }
         break;
     case 2:
         if (!load_menu_background("data/menu/tutoriel_2.png"))
         {
-            printf("\nFailed to load media!");
+            if (display_errors_on)
+                fprintf(stderr, "\nFailed to load media!");
             close_SDL();
         }
         break;
@@ -562,7 +580,8 @@ void display_difficulties(char *username)
 
     if (!load_menu_background("data/menu/MenuBack.png"))
     {
-        printf("\nFailed to load media!");
+        if (display_errors_on)
+            fprintf(stderr, "\nFailed to load media!");
         close_SDL();
     }
     create_difficulties();
@@ -610,7 +629,8 @@ void start_game()
     while (RETURN_TO_MENU == 0)
     {
         char *selected_map = map();
-        printf("Selected: %s\n\n", selected_map);
+        if (display_errors_on)
+            fprintf(stderr, "Selected: %s\n\n", selected_map);
         event(selected_map);
     }
 }
@@ -633,7 +653,8 @@ bool create_save(int difficulty, char *username)
     strcpy(save.player_name, username);
     if (!create_save_file(save))
     {
-        printf("\nError while creating the save\n");
+        if (display_errors_on)
+            fprintf(stderr, "\nError while creating the save\n");
         return false;
     }
     return true;
@@ -659,6 +680,9 @@ bool create_save_file(const struct Save save)
 void clear_menu()
 {
     SDL_FreeSurface(BackgroundImg);
+    SDL_FreeSurface(EasyImg);
+    SDL_FreeSurface(NormalImg);
+    SDL_FreeSurface(HardImg);
     BackgroundImg = NULL;
     SDL_DestroyTexture(TextTexture0);
     SDL_DestroyTexture(TextTexture1);
@@ -667,18 +691,9 @@ void clear_menu()
     SDL_DestroyTexture(TextTexture4);
     SDL_DestroyTexture(TextTexture5);
     SDL_DestroyTexture(ImgTexture);
+    SDL_DestroyTexture(EasyTexture);
+    SDL_DestroyTexture(NormalTexture);
+    SDL_DestroyTexture(HardTexture);
 }
 
-void clear_score()
-{
-    // TextRect0.h = -1;
-    // TextRect0.w = -1;
-    // TextRect0.x = -1;
-    // TextRect0.y = -1;
-    SDL_DestroyTexture(TextTexture0);
-    SDL_DestroyTexture(TextTexture1);
-    SDL_DestroyTexture(TextTexture2);
-    SDL_DestroyTexture(TextTexture3);
-    SDL_DestroyTexture(TextTexture4);
-    SDL_DestroyTexture(TextTexture5);
-}
+

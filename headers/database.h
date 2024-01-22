@@ -19,4 +19,3 @@ bool check_username(char *username);
 bool update(int score, char *username);
 bool delete(char *username);
 bool delete_all();
-void display_ranking_head();

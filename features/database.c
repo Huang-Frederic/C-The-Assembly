@@ -8,7 +8,6 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName)
 
     for (int i = 0; i < argc; i++)
     {
-        // printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
         switch (i)
         {
         case 0:
@@ -48,7 +47,8 @@ bool create()
 
     if (rc != SQLITE_OK)
     {
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         return false;
     }
@@ -63,7 +63,8 @@ bool create()
     }
     else
     {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -81,7 +82,8 @@ bool insert(int score, char *username)
 
     if (rc != SQLITE_OK)
     {
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         return false;
     }
@@ -99,7 +101,8 @@ bool insert(int score, char *username)
     }
     else
     {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -117,12 +120,11 @@ bool select_head()
 
     if (rc != SQLITE_OK)
     {
-
-        fprintf(stderr, "Cannot open database: %s\n",
-                sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
 
-        return 1;
+        return false;
     }
 
     char *sql = "SELECT * FROM ranking ORDER BY score DESC LIMIT 5";
@@ -132,19 +134,20 @@ bool select_head()
 
     if (rc != SQLITE_OK)
     {
-
-        fprintf(stderr, "Failed to select data\n");
-        fprintf(stderr, "SQL error: %s\n", err_msg);
+        if (display_errors_on) {
+            fprintf(stderr, "Failed to select data\n");
+            fprintf(stderr, "SQL error: %s\n", err_msg);
+        }
 
         sqlite3_free(err_msg);
         sqlite3_close(db);
 
-        return 1;
+        return false;
     }
 
     sqlite3_close(db);
 
-    return 0;
+    return true;
 }
 
 bool select_by_username(char *username)
@@ -157,7 +160,8 @@ bool select_by_username(char *username)
 
     if (rc != SQLITE_OK)
     {
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         return false;
     }
@@ -170,17 +174,14 @@ bool select_by_username(char *username)
     {
         sqlite3_bind_text(res, 1, username, strlen(username) / sizeof(char), SQLITE_TRANSIENT);
         rc = sqlite3_step(res);
-        printf("%s\n", sqlite3_column_text(res, 0));
         if (rc == SQLITE_ROW)
-        {
             exist = 1;
-            printf("%s\n", sqlite3_column_text(res, 0));
-        }
         sqlite3_finalize(res);
     }
     else
     {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -206,7 +207,8 @@ bool update(int score, char *username)
 
     if (rc != SQLITE_OK)
     {
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         return false;
     }
@@ -223,7 +225,8 @@ bool update(int score, char *username)
     }
     else
     {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -241,8 +244,8 @@ bool delete(char *username)
 
     if (rc != SQLITE_OK)
     {
-
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
 
         return false;
@@ -257,8 +260,9 @@ bool delete(char *username)
         sqlite3_finalize(res);
     }
     else
-    {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+    {   
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -276,8 +280,8 @@ bool delete_all()
 
     if (rc != SQLITE_OK)
     {
-
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
 
         return false;
@@ -292,7 +296,8 @@ bool delete_all()
     }
     else
     {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        if (display_errors_on)
+            fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
         return false;
     }
 
@@ -300,9 +305,3 @@ bool delete_all()
     return true;
 }
 
-void display_ranking_head()
-{
-    select_head();
-    for (int i = 0; i < 5; ++i)
-        printf("Id: %d | Username: %s | Score: %d\n", ranking[i].id, ranking[i].username, ranking[i].score);
-}

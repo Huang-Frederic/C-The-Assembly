@@ -9,17 +9,20 @@ void init()
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         close_SDL();
     }
     else if (TTF_Init() == -1)
     {
-        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         close_SDL();
     }
     else if (!loadFont(selectedFont, 24))
     {
-        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         close_SDL();
     }
     else
@@ -28,7 +31,8 @@ void init()
         gWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
         if (gWindow == NULL)
         {
-            printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+            if (display_errors_on)
+                fprintf(stderr,"Window could not be created! SDL_Error: %s\n", SDL_GetError());
             close_SDL();
         }
         else
@@ -36,8 +40,10 @@ void init()
             Renderer = SDL_CreateRenderer(gWindow, -1, 0);
             if (!Renderer)
             {
-                printf("\nError Renderer : %s", SDL_GetError());
-                printf("\nThere was a problem creating the renderer.");
+                if (display_errors_on) {
+                    fprintf(stderr, "\nError Renderer : %s", SDL_GetError());
+                    fprintf(stderr, "\nThere was a problem creating the renderer.");
+                }
                 close_SDL();
             }
             // Get window surface
@@ -56,7 +62,8 @@ bool loadFont(const char *selectedFont, int font_size)
     font = TTF_OpenFont(selectedFont, font_size);
     if (font == NULL)
     {
-        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
     return true;
@@ -68,7 +75,8 @@ void close_SDL()
     // Destroy window
     SDL_DestroyWindow(gWindow);
     gWindow = NULL;
-
+    if (display_errors_on)
+        fprintf(stderr, "\nSDL2 clear process done.");
     // Quit SDL subsystems
     SDL_Quit();
 }
@@ -82,7 +90,8 @@ void get_auto_save()
     FILE *ini_file = fopen("c.ini", "r");
     if (ini_file == NULL)
     {
-        printf("An error while opening c.ini have occured!\n");
+        if (display_errors_on)
+            fprintf(stderr, "An error while opening c.ini have occured!\n");
         close_SDL();
     }
 
@@ -102,7 +111,8 @@ void get_auto_save()
 
     if (!Found)
     {
-        printf("auto_save in c.ini not found, auto_save have been set to On\n\n");
+        if (display_errors_on)
+            fprintf(stderr,"auto_save in c.ini not found, auto_save have been set to On\n\n");
     }
 
     fclose(ini_file);
@@ -116,7 +126,8 @@ void get_display_errors()
     FILE *ini_file = fopen("c.ini", "r");
     if (ini_file == NULL)
     {
-        printf("An error while opening c.ini have occured!\n");
+        if (display_errors_on)
+            fprintf(stderr, "An error while opening c.ini have occured!\n");
         close_SDL();
     }
 
@@ -135,8 +146,9 @@ void get_display_errors()
     }
 
     if (!Found)
-    {
-        printf("display_errors in c.ini not found, display_errors have been set to On\n\n");
+    {   
+        if (display_errors_on)
+            fprintf(stderr, "display_errors in c.ini not found, display_errors have been set to On\n\n");
     }
 
     fclose(ini_file);

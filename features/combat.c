@@ -9,7 +9,8 @@ void combat(char *map)
     char country[20];
     strcpy(country, get_country(map)); // Change with map
 
-    printf("Country: %s\n", country);
+    if (display_errors_on)
+        fprintf(stderr, "Country: %s\n", country);
 
     // INIT THINGS
     struct Player player;
@@ -57,7 +58,8 @@ void combat(char *map)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEMOTION)
@@ -101,7 +103,8 @@ void combat(char *map)
                             {
                                 if (e.type == SDL_QUIT)
                                 {
-                                    printf("\n\nQuiting ...\n\n");
+                                    if (display_errors_on)
+                                        fprintf(stderr, "\n\nQuiting ...\n\n");
                                     close_SDL();
                                 }
                             }
@@ -189,8 +192,8 @@ struct Player get_player()
     // use fscanf to read save.txt file
     FILE *save = fopen("data/save.txt", "r");
     if (save == NULL)
-    {
-        printf("An error while opening save.txt have occured!\n");
+    {   if (display_errors_on)
+            fprintf(stderr, "An error while opening save.txt have occured!\n");
         close_SDL();
     }
 
@@ -254,7 +257,8 @@ struct Monster get_monster(char *map, struct Player *player)
     }
     else
     {
-        printf("An error occured with the Syntax of the monster Name!\n");
+        if (display_errors_on)
+            fprintf(stderr, "An error occured with the Syntax of the monster Name!\n");
         close_SDL();
     }
 
@@ -269,7 +273,8 @@ struct Monster get_monster(char *map, struct Player *player)
     FILE *monster_file = fopen(path, "r");
     if (monster_file == NULL)
     {
-        printf("An error while opening monster_file.txt have occured!\n");
+        if (display_errors_on)
+            fprintf(stderr, "An error while opening monster_file.txt have occured!\n");
         close_SDL();
     }
     else
@@ -356,7 +361,8 @@ struct Card get_card(char card_name[30])
     FILE *card_file = fopen(path, "r");
     if (card_file == NULL)
     {
-        printf("An error while opening %s have occured!\n", card_name);
+        if (display_errors_on)
+            fprintf(stderr, "An error while opening %s have occured!\n", card_name);
         close_SDL();
     }
 
@@ -393,8 +399,9 @@ char *get_country(char *map)
     }
 
     if (country == NULL)
-    {
-        printf("An error occured with the Syntax of the map Name!\n");
+    {   
+        if (display_errors_on)
+            fprintf(stderr, "An error occured with the Syntax of the map Name!\n");
         close_SDL();
     }
 
@@ -412,8 +419,11 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        printf("%s\n", path);
-        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        if (display_errors_on) {
+            fprintf(stderr, "%s\n", path);
+            fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        }
+        
         close_SDL();
     }
 
@@ -421,7 +431,8 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
 
     if (formattedSurface == NULL)
     {
-        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to convert surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -432,7 +443,8 @@ SDL_Surface *load_Pathed_Media(char *path, float scale)
 
     if (scaledSurface == NULL)
     {
-        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to scale surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -550,7 +562,8 @@ void display_difficulty(struct Player player)
 
     if (difficultyImage == NULL)
     {
-        printf("Failed to load difficulty image!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load difficulty image!\n");
         close_SDL();
     }
 
@@ -565,7 +578,8 @@ void renderStatus(const char *text, int value, int x)
     SDL_Surface *statusImage = load_Pathed_Media(full_path, 0.15);
     if (statusImage == NULL)
     {
-        printf("Failed to load status image: %s\n", full_path);
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load status image: %s\n", full_path);
         close_SDL();
     }
 
@@ -665,7 +679,8 @@ void render_end_turn_button(SDL_Rect endTurnButtonRect, int color)
     SDL_Surface *statusImage = load_Pathed_Media(full_path, 1);
     if (statusImage == NULL)
     {
-        printf("Failed to load status image: %s\n", full_path);
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load status image: %s\n", full_path);
         close_SDL();
     }
 
@@ -749,7 +764,8 @@ void renderCard(struct Card card, int x, int y, float scale)
     SDL_Surface *cardImage = load_Pathed_Media(imagePath, scale);
     if (cardImage == NULL)
     {
-        printf("Failed to load card image: %s\n", imagePath);
+        if (display_errors_on)
+            fprintf(stderr, "Failed to load card image: %s\n", imagePath);
         close_SDL();
     }
 
@@ -796,10 +812,12 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
         SDL_Delay(1 * 500);
 
         // apply multipliers
-        printf("%s Damage Output Pre-Buffs : %d\n", player->name, card.damage);
+        if (display_errors_on)
+            fprintf(stderr, "%s Damage Output Pre-Buffs : %d\n", player->name, card.damage);
         card.damage = player->strength != 0 ? card.damage * 1.25 : card.damage;
         card.damage = monster->vulnerability != 0 ? card.damage * 1.50 : card.damage;
-        printf("%s Damage Output Post-Buffs : %d\n\n", player->name, card.damage);
+        if (display_errors_on)
+            fprintf(stderr, "%s Damage Output Post-Buffs : %d\n\n", player->name, card.damage);
 
         // if monster dodged then apply dammages in function of armor and vulnerability
         // if player dodged then apply dammages in function of armor and vulnerability
@@ -831,7 +849,8 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
                     }
                     break;
                 case 91 ... 100:
-                    printf("The monster dodged the attack!\n\n");
+                    if (display_errors_on)
+                        fprintf(stderr, "The monster dodged the attack!\n\n");
                     sprintf(message, "The monster dodged the attack!");
                     break;
                 }
@@ -985,13 +1004,15 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     SDL_Delay(1500);
 
     // apply multipliers
-    printf("%s Damage Output Pre-Buffs : %d\n", monster->name, card.damage);
+    if (display_errors_on)
+        fprintf(stderr, "%s Damage Output Pre-Buffs : %d\n", monster->name, card.damage);
     card.damage = monster->strength != 0 ? card.damage * 1.25 : card.damage;
     card.damage = player->vulnerability != 0 ? card.damage * 1.5 : card.damage;
     card.damage += card.damage * (0.05 * player->day);
     card.heal += card.heal * (0.05 * player->day);
     card.armor += card.armor * (0.05 * player->day);
-    printf("%s Damage Output Post-Buffs : %d\n\n", monster->name, card.damage);
+    if (display_errors_on)
+        fprintf(stderr, "%s Damage Output Post-Buffs : %d\n\n", monster->name, card.damage);
 
     // if player dodged then apply dammages in function of armor and vulnerability
     if (card.damage != 0)
@@ -1000,7 +1021,8 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
         int dodge = rand() % 100;
         if (player->dodge > 0 && dodge >= 90)
         {
-            printf("You have dodged the attack!\n\n");
+            if (display_errors_on)
+                fprintf(stderr, "You have dodged the attack!\n\n");
             SDL_BlitSurface(copied_surface_cards, NULL, gScreenSurface, NULL);
             renderCombatText("You have dodged the attack!", gScreenSurface->w / 3, gScreenSurface->h / 5, 32);
             SDL_UpdateWindowSurface(gWindow);
@@ -1196,7 +1218,8 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
             }
             break;
         default:
-            printf("No animation\n");
+            if (display_errors_on)
+                fprintf(stderr, "No animation\n");
             close_SDL();
             break;
         }
@@ -1258,7 +1281,8 @@ void combat_animation(struct Card *card, SDL_Surface *player_surface, SDL_Surfac
             }
             break;
         default:
-            printf("No animation\n");
+            if (display_errors_on)
+                fprintf(stderr, "No animation\n");
             close_SDL();
             break;
         }
@@ -1275,8 +1299,9 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
 
         cardImages[i] = load_Pathed_Media(imagePath, 0.25);
         if (cardImages[i] == NULL)
-        {
-            printf("Failed to load card image: %s\n", imagePath);
+        {   
+            if (display_errors_on)
+            fprintf(stderr, "Failed to load card image: %s\n", imagePath);
             close_SDL();
         }
     }
@@ -1328,7 +1353,8 @@ void apply_curl(struct Player *player, char *country, struct Weather *curled_wea
     SDL_Surface *screenCopy = SDL_ConvertSurface(gScreenSurface, gScreenSurface->format, 0);
     SDL_Surface *overlay = SDL_CreateRGBSurfaceWithFormat(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_PIXELFORMAT_RGBA32);
 
-    printf("\nWeather: %s | Code: %d\n\n", curled_weather->description, curled_weather->code);
+    if (display_errors_on)
+        fprintf(stderr, "\nWeather: %s | Code: %d\n\n", curled_weather->description, curled_weather->code);
 
     // make a copy of gScreenSurface
     SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
@@ -1464,7 +1490,8 @@ void win_anim_player(SDL_Surface *screenCopy, char *image, char *message)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1509,7 +1536,8 @@ void win_anim_rewards(SDL_Surface *screenCopy)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1531,7 +1559,8 @@ void win_anim_rewards(SDL_Surface *screenCopy)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1572,9 +1601,11 @@ struct Rewards get_rewards()
 
     // Get a random number between 0 and number_of_cards
     int random_number1 = rand() % number_of_cards;
-    printf("random_number1 : %d\n", random_number1);
+    if (display_errors_on)
+        fprintf(stderr, "random_number1 : %d\n", random_number1);
     int random_number2 = rand() % number_of_cards;
-    printf("random_number2 : %d\n", random_number2);
+    if (display_errors_on)
+        fprintf(stderr, "random_number2 : %d\n", random_number2);
 
     number_of_cards = 0;
 
@@ -1593,7 +1624,8 @@ struct Rewards get_rewards()
                         *dot = '\0';
                     }
                     sprintf(rewards.first_card.name, "%s", dir->d_name);
-                    printf("rewards.first_card.name : %s\n", rewards.first_card.name);
+                    if (display_errors_on)
+                        fprintf(stderr, "rewards.first_card.name : %s\n", rewards.first_card.name);
                 }
                 if (random_number2 == number_of_cards)
                 {
@@ -1603,7 +1635,8 @@ struct Rewards get_rewards()
                         *dott = '\0';
                     }
                     sprintf(rewards.second_card.name, "%s", dir->d_name);
-                    printf("rewards.second_card.name : %s\n", rewards.second_card.name);
+                    if (display_errors_on)
+                        fprintf(stderr, "rewards.second_card.name : %s\n", rewards.second_card.name);
                 }
                 number_of_cards++;
             }
@@ -1618,7 +1651,8 @@ struct Rewards get_rewards()
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1659,7 +1693,8 @@ void display_rewards(struct Rewards rewards, SDL_Surface *screenCopy, struct Pla
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1691,7 +1726,8 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during camp save!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Error opening file the save file during camp save!\n");
         close_SDL();
     }
     else
@@ -1728,8 +1764,9 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         // write to file
         save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
-        {
-            printf("Error opening file the save file during treasure save!\n");
+        {   
+            if (display_errors_on)
+                fprintf(stderr, "Error opening file the save file during treasure save!\n");
             close_SDL();
         }
         else
@@ -1796,7 +1833,8 @@ void lose_display_score(SDL_Surface *screenCopy, struct Save *save)
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during camp save!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Error opening file the save file during camp save!\n");
         close_SDL();
     }
     else
@@ -1813,7 +1851,8 @@ void lose_display_score(SDL_Surface *screenCopy, struct Save *save)
     int textWidth = strlen(message) * 18;
     int xCentered = (gScreenSurface->w - textWidth) / 2;
 
-    printf("Score : %d\n", save->score);
+    if (display_errors_on)
+        fprintf(stderr, "Score : %d\n", save->score);
 
     for (int i = -200; i <= 420; i += 5)
     {
@@ -1834,7 +1873,8 @@ void lose_display_score(SDL_Surface *screenCopy, struct Save *save)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1922,7 +1962,8 @@ void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -1949,7 +1990,8 @@ void delete_save()
     FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
-        perror("Error opening file");
+        if (display_errors_on)
+            perror("Error opening file");
         close_SDL();
         return;
     }
@@ -1962,7 +2004,8 @@ void delete_save()
     }
     else
     {
-        printf("Unable to delete the file\n");
+        if (display_errors_on)
+            fprintf(stderr, "Unable to delete the file\n");
         close_SDL();
     }
 

@@ -5,7 +5,8 @@ void event(char *map)
 {
     if (strcmp(map, "Camp") == 0)
     {
-        printf("You have entered a camp!\n");
+        if (display_errors_on)
+            fprintf(stderr, "You have entered a camp!\n");
 
         display_camp();
         save_camp();
@@ -13,13 +14,15 @@ void event(char *map)
     else if (strcmp(map, "Treasure") == 0)
     {
         srand(time(NULL));
-        printf("You have found a treasure!\n");
+        if (display_errors_on)
+            fprintf(stderr, "You have found a treasure!\n");
 
         save_treasure(get_treasure());
     }
     else
     {
-        printf("You have entered a combat!\n");
+        if (display_errors_on)
+            fprintf(stderr, "You have entered a combat!\n");
         combat(map);
     }
 }
@@ -53,7 +56,8 @@ void save_camp()
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during camp save!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Error opening file the save file during camp save!\n");
         close_SDL();
     }
     else
@@ -76,7 +80,8 @@ void save_camp()
         save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
         {
-            printf("Error opening file the save file during camp save!\n");
+            if (display_errors_on)
+                fprintf(stderr, "Error opening file the save file during camp save!\n");
             close_SDL();
         }
         else
@@ -106,7 +111,8 @@ struct Treasure get_treasure()
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during treasure!\n");
+        if (display_errors_on)
+        fprintf(stderr, "Error opening file the save file during treasure!\n");
         close_SDL();
     }
     else
@@ -118,7 +124,8 @@ struct Treasure get_treasure()
 
         if (max_energy == 28)
         {
-            printf("Max Energy Amount reached !\n");
+            if (display_errors_on)
+            fprintf(stderr, "Max Energy Amount reached !\n");
             treasure.card = strdup(get_treasure_card());
             treasure.if_no_energy_card = get_treasure_card();
         }
@@ -197,7 +204,8 @@ void save_treasure(struct Treasure treasure)
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during camp save!\n");
+        if (display_errors_on)
+        fprintf(stderr, "Error opening file the save file during camp save!\n");
         close_SDL();
     }
     else
@@ -222,7 +230,8 @@ void save_treasure(struct Treasure treasure)
         save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
         {
-            printf("Error opening file the save file during treasure save!\n");
+            if (display_errors_on)
+            fprintf(stderr, "Error opening file the save file during treasure save!\n");
             close_SDL();
         }
         else
@@ -251,8 +260,11 @@ void save_treasure(struct Treasure treasure)
 
 void display_treasure(struct Treasure treasure)
 {
-    printf("T1 : %s\n", treasure.card);
-    printf("T2 : %s\n\n", treasure.if_no_energy_card);
+    if (display_errors_on) {
+        fprintf(stderr,  "T1 : %s\n", treasure.card);
+        fprintf(stderr, "T2 : %s\n\n", treasure.if_no_energy_card);
+    }
+        
 
     SDL_Event e;
     int clicked = 0;
@@ -272,7 +284,8 @@ void display_treasure(struct Treasure treasure)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -294,7 +307,8 @@ void display_treasure(struct Treasure treasure)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -329,7 +343,8 @@ void display_treasure(struct Treasure treasure)
         {
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)

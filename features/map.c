@@ -48,7 +48,8 @@ char *map()
             // User requests quit
             if (e.type == SDL_QUIT)
             {
-                printf("\n\nQuiting ...\n\n");
+                if (display_errors_on)
+                    fprintf(stderr, "\n\nQuiting ...\n\n");
                 close_SDL();
             }
 
@@ -147,8 +148,10 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        printf("%s\n", path);
-        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        if (display_errors_on) {
+            printf("%s\n", path);
+            printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        }
         close_SDL();
     }
 
@@ -156,7 +159,8 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
 
     if (formattedSurface == NULL)
     {
-        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to convert surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -167,7 +171,8 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
 
     if (scaledSurface == NULL)
     {
-        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to scale surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -190,8 +195,10 @@ SDL_Surface *loadMedia(char *path, float scale)
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        printf("%s\n", path);
-        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        if (display_errors_on) {
+            fprintf(stderr, "%s\n", path);
+            fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
+        }
         close_SDL();
     }
 
@@ -199,7 +206,8 @@ SDL_Surface *loadMedia(char *path, float scale)
 
     if (formattedSurface == NULL)
     {
-        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to convert surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -210,7 +218,8 @@ SDL_Surface *loadMedia(char *path, float scale)
 
     if (scaledSurface == NULL)
     {
-        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to scale surface! SDL Error: %s\n", SDL_GetError());
         close_SDL();
     }
 
@@ -288,7 +297,8 @@ void renderMapText(SDL_Surface *surface, char *Text, int font_size, float width_
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, Text, textColor);
     if (textSurface == NULL)
     {
-        printf("Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
         return;
     }
 
@@ -318,7 +328,8 @@ void renderTextChosen(SDL_Surface *surface, const char *text, int x, int y)
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, textColor);
     if (textSurface == NULL)
     {
-        printf("Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
+        if (display_errors_on)
+            fprintf(stderr, "Unable to render text! SDL_ttf Error: %s\n", TTF_GetError());
         return;
     }
 
@@ -412,7 +423,8 @@ int get_save_day()
     FILE *save = fopen("data/save.txt", "r");
     if (save == NULL)
     {
-        printf("Error opening file save.txt for getting the day!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Error opening file save.txt for getting the day!\n");
         close_SDL();
     }
     int day;
@@ -421,7 +433,8 @@ int get_save_day()
         fscanf(save, "%d", &day);
     }
     fclose(save);
-    printf("Day: %d\n", day);
+    if (display_errors_on)
+        fprintf(stderr, "Day: %d\n", day);
     return day;
 }
 
@@ -433,7 +446,8 @@ void display_map_score()
     FILE *save_file = fopen("data/save.txt", "r");
     if (save_file == NULL)
     {
-        printf("Error opening file the save file during map!\n");
+        if (display_errors_on)
+            fprintf(stderr, "Error opening file the save file during map!\n");
         close_SDL();
     }
     else
