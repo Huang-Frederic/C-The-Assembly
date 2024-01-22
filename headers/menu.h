@@ -7,10 +7,13 @@ TTF_Font *Font;
 SDL_Surface *TextSurface;                 
 SDL_Surface *BackgroundImg = NULL;
 SDL_Surface *EasyImg, *NormalImg, *HardImg, *PersoImg;
+SDL_Surface *RemoveImg, *AddImg, *ValidImg;
 SDL_Texture *ImgTexture;
-SDL_Texture *EasyTexture, *NormalTexture, *HardTexture, *PersoTexture;                                               
+SDL_Texture *EasyTexture, *NormalTexture, *HardTexture, *PersoTexture; 
+SDL_Texture *RemoveTexture, *AddTexture, *ValidTexture;                                             
 SDL_Texture *TextTexture0, *TextTexture1, *TextTexture2, *TextTexture3, *TextTexture4, *TextTexture5; 
 SDL_Rect EasyRect, NormalRect, HardRect, PersoRect;
+SDL_Rect RemoveRect, AddRect, ValidRect;
 SDL_Rect TextRect0, TextRect1, TextRect2, TextRect3, TextRect4, TextRect5; 
 SDL_Point mousePosition;
 
@@ -33,6 +36,11 @@ void display_difficulties(char *username);
 bool is_polling_event_difficulties(char *username);
 void render_difficulties();
 
+bool create_custom_difficulty();
+void display_custom_difficulty(char *username);
+bool is_polling_event_custom_difficulty(char *username);
+void render_custom_difficulty();
+
 void display_new_game();
 void render_new_game();
 bool is_polling_event_new_game();
@@ -54,5 +62,6 @@ void start_game();
 int save = 0;
 int menu_event = 0;
 int tuto = 0;
+int custom_difficulty = 10;
 
 extern struct Ranking ranking[5];

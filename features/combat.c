@@ -301,6 +301,10 @@ struct Monster get_monster(char *map, struct Player *player)
             monster.strength = 3;
             monster.dodge = 3;
         }
+        else
+        {
+            monster.health += monster.health * (player->difficulty / 100);
+        }
         monster.health += monster.health * (0.05 * player->day);
         monster.maxHealth = monster.health;
 
@@ -509,7 +513,7 @@ void display_difficulty(struct Player player)
         difficultyImage = load_Pathed_Media("difficulties/Hard", 0.25);
         break;
     default:
-        printf("Error while loading difficulty image!\n");
+        difficultyImage = load_Pathed_Media("difficulties/Perso", 0.25);
         break;
     }
 
@@ -1717,8 +1721,7 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         {
             score_points = 100;
         }
-        save.score += score_points + (score_points * (save.day * 0.05)) + (score_points * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25
-                                                                                                                                                : 0));
+        save.score += score_points + (score_points * (save.day * 0.05)) + (score_points * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : save.difficulty / 100));
         save.hp = player.health + rewards.health;
         save.max_hp = player.maxHealth + rewards.health;
         save.day++;

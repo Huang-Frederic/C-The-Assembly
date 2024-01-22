@@ -47,7 +47,7 @@ bool create_text(const char *Message, int FONT_SIZE, SDL_Texture **TextTexture, 
             fprintf(stderr, "\nUnable to create texture from surface!");
         return false;
     }
-    TextRect->x = middle ? SCREEN_WIDTH / 2 - TextSurface->w / 2 : 350;
+    TextRect->x = middle ? SCREEN_WIDTH / 2 - TextSurface->w / 2 : 50;
     TextRect->y = y + 50 + middle * 50;
     TextRect->w = TextSurface->w;
     TextRect->h = TextSurface->h;
@@ -113,7 +113,7 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
         return false;
     }
     DifficultyRect->x = x;
-    DifficultyRect->y = ishover ? SCREEN_HEIGHT / 2 - 150 : SCREEN_HEIGHT / 2 - 100;
+    DifficultyRect->y = ishover ? SCREEN_HEIGHT / 2 - 150 : (strcmp(difficulty, "validate") == 0) ? SCREEN_HEIGHT - 200 : SCREEN_HEIGHT/ 2 - 100;
     DifficultyRect->w = DifficultySurface->w;
     DifficultyRect->h = DifficultySurface->h;
     SDL_FreeSurface(DifficultySurface);
@@ -282,6 +282,12 @@ bool is_polling_event_difficulties(char *username)
                     create_save(1, username);
                     return false;
                 }
+
+                else if (SDL_PointInRect(&mousePosition, &PersoRect))
+                {
+                    display_custom_difficulty(username);
+                    return false;
+                }
             }
         case SDL_MOUSEMOTION:
             mousePosition.x = WindowEvent.motion.x;
@@ -295,13 +301,68 @@ bool is_polling_event_difficulties(char *username)
             else if (SDL_PointInRect(&mousePosition, &HardRect))
                 create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 700, 1);
             else if (SDL_PointInRect(&mousePosition, &PersoRect))
-                create_difficulty("Perso", PersoImg, &PersoTexture, &HardRect, 1000, 1);
+                create_difficulty("Perso", PersoImg, &PersoTexture, &PersoRect, 1000, 1);
             break;
         }
     }
 
     return true;
 }
+
+
+bool is_polling_event_custom_difficulty(char *username)
+{
+    while (SDL_PollEvent(&WindowEvent))
+    {
+        switch (WindowEvent.type)
+        {
+        case SDL_QUIT:
+            clear_menu();
+            close_SDL();
+            return false;
+
+        case SDL_MOUSEBUTTONDOWN:
+            if (WindowEvent.button.button == SDL_BUTTON_LEFT)
+            {
+                mousePosition.x = WindowEvent.motion.x;
+                mousePosition.y = WindowEvent.motion.y;
+
+                if (SDL_PointInRect(&mousePosition, &RemoveRect))
+                {
+                    custom_difficulty -= (custom_difficulty > -50 ? (custom_difficulty == 10 ? 20 : 10) : 0); 
+                    if (display_errors_on) 
+                        fprintf(stderr, "\nCustom: %d", custom_difficulty);
+                    create_custom_difficulty();
+                }
+
+                else if (SDL_PointInRect(&mousePosition, &AddRect))
+                {
+                    custom_difficulty += (custom_difficulty < 200 ? (custom_difficulty == -10 ? 20 : 10) : 0);  
+                    if (display_errors_on)
+                        fprintf(stderr, "\nCustom: %d", custom_difficulty);
+                    create_custom_difficulty();
+                }
+
+                else if (SDL_PointInRect(&mousePosition, &TextRect0))
+                {
+                    display_difficulties(username);
+                    return false;
+                }
+
+                
+                else if (SDL_PointInRect(&mousePosition, &ValidRect))
+                {
+                    create_save(custom_difficulty, username);
+                    start_game();
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 
 void render()
 {
@@ -344,6 +405,21 @@ void render_difficulties()
     SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
     SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
     SDL_RenderCopy(Renderer, PersoTexture, NULL, &PersoRect);
+    SDL_RenderPresent(Renderer);
+    SDL_Delay(10);
+}
+
+void render_custom_difficulty()
+{
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
+    SDL_RenderClear(Renderer);
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
+    SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1);
+    SDL_RenderCopy(Renderer, RemoveTexture, NULL, &RemoveRect);
+    SDL_RenderCopy(Renderer, AddTexture, NULL, &AddRect);
+    SDL_RenderCopy(Renderer, ValidTexture, NULL, &ValidRect);
+
     SDL_RenderPresent(Renderer);
     SDL_Delay(10);
 }
@@ -399,6 +475,23 @@ bool create_difficulties()
     if (!create_difficulty_text("Custom", 50, &TextTexture3, &TextRect3, PersoRect.x + PersoRect.w / 2))
         return false;
     return true;
+}
+
+bool create_custom_difficulty() {
+    char pourcent[6];
+    snprintf(pourcent, 5, "%d", custom_difficulty);
+    strcat(pourcent, "%");
+    
+    if (!create_text("<- Retour", FONT_NORMAL, &TextTexture0, &TextRect0, 0, 0))
+        return false;
+    if (!create_text(pourcent, FONT_HOVER, &TextTexture1, &TextRect1, SCREEN_HEIGHT / 2 - 100, 1))
+        return false;
+    if (!create_difficulty("remove_button", RemoveImg, &RemoveTexture, &RemoveRect, SCREEN_WIDTH / 2 - 400, 0))
+        return false;
+    if (!create_difficulty("add_button", AddImg, &AddTexture, &AddRect, SCREEN_WIDTH / 2 + 200, 0))
+        return false;
+    if (!create_difficulty("validate", ValidImg, &ValidTexture, &ValidRect, SCREEN_WIDTH - 250, 0))
+        return false;
 }
 
 void display_menu()
@@ -605,14 +698,14 @@ void display_difficulties(char *username)
     }
     create_difficulties();
 
-    FadeDifficulty(0);
+    // FadeDifficulty(0);
 
     while (is_polling_event_difficulties(username))
     {
         render_difficulties();
     }
 
-    FadeDifficulty(1);
+    // FadeDifficulty(1);
 
     start_game();
 }
@@ -627,9 +720,11 @@ void FadeDifficulty(int inout)
     SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
     SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); // Add text to render queue.
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
+    SDL_RenderCopy(Renderer, TextTexture3, NULL, &TextRect3);
     SDL_RenderCopy(Renderer, EasyTexture, NULL, &EasyRect);
     SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
     SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
+    SDL_RenderCopy(Renderer, PersoTexture, NULL, &PersoRect);
 
     SDL_GetRendererOutputSize(Renderer, &width, &height);
 
@@ -643,6 +738,27 @@ void FadeDifficulty(int inout)
 
     FadeEffect(0, inout);
 }
+
+
+void display_custom_difficulty(char *username)
+{
+
+    if (!load_menu_background("data/menu/MenuBack.png"))
+    {
+        if (display_errors_on)
+            fprintf(stderr, "\nFailed to load media!");
+        close_SDL();
+    }
+    create_custom_difficulty();
+
+
+    while (is_polling_event_custom_difficulty(username))
+    {
+        render_custom_difficulty();
+    }
+}
+
+
 
 void start_game()
 {
