@@ -19,7 +19,7 @@ TTF_Font *font = NULL;
 SDL_Event WindowEvent;
 SDL_Renderer *Renderer;
 
-int RETURN_TO_MENU = 0;
+int RETURN_TO_MENU = 1;
 
 // Init Functions
 void init();
@@ -36,6 +36,5 @@ void save_to_player();
 
 int auto_save_on = 1;
 int display_errors_on = 1;
-
 
 #endif

@@ -113,7 +113,8 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
         return false;
     }
     DifficultyRect->x = x;
-    DifficultyRect->y = ishover ? SCREEN_HEIGHT / 2 - 150 : (strcmp(difficulty, "validate") == 0) ? SCREEN_HEIGHT - 200 : SCREEN_HEIGHT/ 2 - 100;
+    DifficultyRect->y = ishover ? SCREEN_HEIGHT / 2 - 150 : (strcmp(difficulty, "validate") == 0) ? SCREEN_HEIGHT - 200
+                                                                                                  : SCREEN_HEIGHT / 2 - 100;
     DifficultyRect->w = DifficultySurface->w;
     DifficultyRect->h = DifficultySurface->h;
     SDL_FreeSurface(DifficultySurface);
@@ -309,7 +310,6 @@ bool is_polling_event_difficulties(char *username)
     return true;
 }
 
-
 bool is_polling_event_custom_difficulty(char *username)
 {
     while (SDL_PollEvent(&WindowEvent))
@@ -329,15 +329,15 @@ bool is_polling_event_custom_difficulty(char *username)
 
                 if (SDL_PointInRect(&mousePosition, &RemoveRect))
                 {
-                    custom_difficulty -= (custom_difficulty > -50 ? (custom_difficulty == 10 ? 20 : 10) : 0); 
-                    if (display_errors_on) 
+                    custom_difficulty -= (custom_difficulty > -50 ? (custom_difficulty == 10 ? 20 : 10) : 0);
+                    if (display_errors_on)
                         fprintf(stderr, "Custom: %d\n", custom_difficulty);
                     create_custom_difficulty();
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &AddRect))
                 {
-                    custom_difficulty += (custom_difficulty < 200 ? (custom_difficulty == -10 ? 20 : 10) : 0);  
+                    custom_difficulty += (custom_difficulty < 200 ? (custom_difficulty == -10 ? 20 : 10) : 0);
                     if (display_errors_on)
                         fprintf(stderr, "Custom: %d\n", custom_difficulty);
                     create_custom_difficulty();
@@ -349,7 +349,6 @@ bool is_polling_event_custom_difficulty(char *username)
                     return false;
                 }
 
-                
                 else if (SDL_PointInRect(&mousePosition, &ValidRect))
                 {
                     create_save(custom_difficulty, username);
@@ -362,7 +361,6 @@ bool is_polling_event_custom_difficulty(char *username)
 
     return true;
 }
-
 
 void render()
 {
@@ -477,11 +475,12 @@ bool create_difficulties()
     return true;
 }
 
-bool create_custom_difficulty() {
+bool create_custom_difficulty()
+{
     char pourcent[6];
     snprintf(pourcent, 5, "%d", custom_difficulty);
     strcat(pourcent, "%");
-    
+
     if (!create_text("<- Retour", FONT_NORMAL, &TextTexture0, &TextRect0, 0, 0))
         return false;
     if (!create_text(pourcent, FONT_HOVER, &TextTexture1, &TextRect1, SCREEN_HEIGHT / 2 - 100, 1))
@@ -506,13 +505,14 @@ void display_menu()
 
     create_menu_texts();
 
-    SurfaceTheRender(0, 0);
+    // SurfaceTheRender(0, 0);
 
     while (is_polling_event_menu())
     {
         render();
     }
-    SurfaceTheRender(1, 0);
+    // SurfaceTheRender(1, 0);
+
     switch (menu_event)
     {
     case 1:
@@ -739,7 +739,6 @@ void FadeDifficulty(int inout)
     FadeEffect(0, inout);
 }
 
-
 void display_custom_difficulty(char *username)
 {
 
@@ -751,14 +750,11 @@ void display_custom_difficulty(char *username)
     }
     create_custom_difficulty();
 
-
     while (is_polling_event_custom_difficulty(username))
     {
         render_custom_difficulty();
     }
 }
-
-
 
 void start_game()
 {
