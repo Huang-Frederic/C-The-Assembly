@@ -401,49 +401,6 @@ char *get_country(char *map)
     return country;
 }
 
-SDL_Surface *load_Pathed_Media(char *path, float scale)
-{
-    char full_path[255] = "data/";
-    strcat(full_path, path);
-    char ext[5] = ".png";
-    strcat(full_path, ext);
-
-    // Load splash image
-    SDL_Surface *originalSurface = IMG_Load(full_path);
-    if (originalSurface == NULL)
-    {
-        printf("%s\n", path);
-        printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
-        close_SDL();
-    }
-
-    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
-
-    if (formattedSurface == NULL)
-    {
-        printf("Unable to convert surface! SDL Error: %s\n", SDL_GetError());
-        close_SDL();
-    }
-
-    int desiredWidth = formattedSurface->w * scale;
-    int desiredHeight = formattedSurface->h * scale;
-
-    SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXELFORMAT_RGBA32);
-
-    if (scaledSurface == NULL)
-    {
-        printf("Unable to scale surface! SDL Error: %s\n", SDL_GetError());
-        close_SDL();
-    }
-
-    SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
-
-    SDL_FreeSurface(originalSurface);
-    SDL_FreeSurface(formattedSurface);
-
-    return scaledSurface;
-}
-
 SDL_Surface *load_Monster_Media(struct Monster monster, char *map)
 {
     char country[20];
@@ -1679,13 +1636,23 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
 {
     struct Save save;
 
-    // Display the beginning of the save screen
-    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
-    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
-    FadeEffect(0, 0);
-    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
+    ////////////////////////////////
+    int wanna_save = 1;
+    if (auto_save_on == 0)
+        if (!check_if_wanna_save())
+            wanna_save = 0;
+    ////////////////////////////////
+
+    if (wanna_save)
+    {
+        // Display the beginning of the save screen
+        SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+        renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+        FadeEffect(0, 0);
+        renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+    }
 
     // Get the save data
     FILE *save_file = fopen("data/save.txt", "r");
@@ -1746,12 +1713,15 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         }
     }
 
-    // Display the end of the save screen
-    SDL_Delay(500);
-    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
-    FadeEffect(0, 1);
-    fclose(save_file);
+    if (wanna_save)
+    {
+        save_to_player();
+        // Display the end of the save screen
+        SDL_Delay(500);
+        renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        FadeEffect(0, 1);
+    }
 }
 
 void combat_lost()

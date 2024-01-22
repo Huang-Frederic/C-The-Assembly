@@ -155,8 +155,8 @@ int is_polling_event_menu()
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect4))
                 {
-                    clear_menu();
-                    close_SDL();
+                    menu_event = 5;
+                    return 1;
                 }
             }
 
@@ -331,8 +331,10 @@ void check_save()
 {
     FILE *fp = fopen("data/save.txt", "r");
     if (fp != NULL)
+    {
+        fclose(fp);
         save = 1;
-    fclose(fp);
+    }
 }
 
 bool create_menu_texts()
@@ -401,6 +403,10 @@ void display_menu()
         break;
     case 4:
         display_score();
+        break;
+    case 5:
+        clear_menu();
+        close_SDL();
         break;
     }
 }
@@ -578,6 +584,7 @@ void display_difficulties(char *username)
 
     start_game();
 }
+
 void FadeDifficulty(int inout)
 {
     int width, height;
@@ -607,6 +614,7 @@ void FadeDifficulty(int inout)
 
 void start_game()
 {
+    save_to_player();
     while (RETURN_TO_MENU == 0)
     {
         char *selected_map = map();

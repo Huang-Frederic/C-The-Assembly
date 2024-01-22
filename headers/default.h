@@ -30,6 +30,9 @@ bool load_media();
 void clear_window();
 void get_auto_save();
 void get_display_errors();
+SDL_Surface *load_Pathed_Media(char *full_path, float scale);
+bool check_if_wanna_save();
+void save_to_player();
 
 int auto_save_on = 1;
 int display_errors_on = 1;

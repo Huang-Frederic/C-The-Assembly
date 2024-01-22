@@ -74,7 +74,6 @@ struct Player get_player();
 struct Monster get_monster(char *map, struct Player *player);
 struct Card get_card(char card_name[30]);
 char *get_country(char *map);
-SDL_Surface *load_Pathed_Media(char *full_path, float scale);
 SDL_Surface *load_Monster_Media(struct Monster monster, char *map);
 SDL_Surface *load_Background_Media(char *country);
 void display_background(SDL_Surface *background);

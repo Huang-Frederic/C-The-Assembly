@@ -402,6 +402,7 @@ int FadeEffect(int faded, int inOut)
             reduce = alpha < 150 ? 5 : 10;
         }
         SDL_FreeSurface(screenCopy);
+        SDL_FreeSurface(overlay);
 
         return 0;
     }
