@@ -300,7 +300,14 @@ void display_treasure(struct Treasure treasure)
     char first_treasure[60] = "cards/sprites/";
     char second_treasure[60] = "cards/sprites/";
     strcat(second_treasure, treasure.card);
-    strcat(first_treasure, treasure.if_no_energy_card);
+    if (treasure.energy == 0)
+    {
+        strcat(first_treasure, treasure.if_no_energy_card);
+    }
+    else
+    {
+        strcpy(first_treasure, "others/mana");
+    }
 
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("Click to open the chest", 430, gScreenSurface->h - 200, 32);
@@ -354,7 +361,6 @@ void display_treasure(struct Treasure treasure)
 
     if (treasure.energy == 1)
     {
-        strcpy(first_treasure, "others/mana");
         renderMap(load_Pathed_Media(first_treasure, 0.8), 370, gScreenSurface->h / 3 + 50, 0, 0);
         renderCombatText("1", 490, gScreenSurface->h / 3 + 160, 64);
     }
