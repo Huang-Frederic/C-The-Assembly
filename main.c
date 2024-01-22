@@ -15,15 +15,14 @@ int main(int argc, char *args[])
     init();
 
     // delete_all();
-    // insert(100, "Gautier");
-    // insert(200, "Hisshiden");
-    // insert(300, "Stephane");
-    // insert(400, "Franck");
-    // insert(500, "Donnesh");
+    // insert(1500, "Gautier");
+    // insert(2700, "Hisshiden");
+    // insert(3000, "Stephane");
+    // insert(4200, "Franck");
+    // insert(5900, "Donnesh");
     while (1)
     {
         display_menu();
-        // event("Camp");
     }
 
     close_SDL();

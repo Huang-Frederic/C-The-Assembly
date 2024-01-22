@@ -44,13 +44,23 @@ void save_camp()
 {
     struct Save save;
 
-    // Display the beginning of the save screen
-    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
-    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
-    FadeEffect(0, 0);
-    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
+    ////////////////////////////////
+    int wanna_save = 1;
+    if (auto_save_on == 0)
+        if (!check_if_wanna_save())
+            wanna_save = 0;
+    ////////////////////////////////
+
+    if (wanna_save)
+    {
+        // Display the beginning of the save screen
+        SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+        renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+        FadeEffect(0, 0);
+        renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+    }
 
     // Get the save data
     FILE *save_file = fopen("data/save.txt", "r");
@@ -95,11 +105,15 @@ void save_camp()
         }
     }
 
-    // Display the end of the save screen
-    SDL_Delay(500);
-    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
-    FadeEffect(0, 1);
+    if (wanna_save)
+    {
+        save_to_player();
+        // Display the end of the save screen
+        SDL_Delay(500);
+        renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        FadeEffect(0, 1);
+    }
 }
 
 struct Treasure get_treasure()
@@ -192,13 +206,23 @@ void save_treasure(struct Treasure treasure)
 
     struct Save save;
 
-    // Display the beginning of the save screen
-    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
-    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
-    FadeEffect(0, 0);
-    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
+    ////////////////////////////////
+    int wanna_save = 1;
+    if (auto_save_on == 0)
+        if (!check_if_wanna_save())
+            wanna_save = 0;
+    ////////////////////////////////
+
+    if (wanna_save)
+    {
+        // Display the beginning of the save screen
+        SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+        renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+        FadeEffect(0, 0);
+        renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+    }
 
     // Get the save data
     FILE *save_file = fopen("data/save.txt", "r");
@@ -251,11 +275,15 @@ void save_treasure(struct Treasure treasure)
         }
     }
 
-    // Display the end of the save screen
-    SDL_Delay(500);
-    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
-    FadeEffect(0, 1);
+    if (wanna_save)
+    {
+        save_to_player();
+        // Display the end of the save screen
+        SDL_Delay(500);
+        renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        FadeEffect(0, 1);
+    }
 }
 
 void display_treasure(struct Treasure treasure)

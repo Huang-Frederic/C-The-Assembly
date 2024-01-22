@@ -171,21 +171,24 @@ bool is_polling_event_menu()
             }
 
         case SDL_MOUSEMOTION:
-            mousePosition.x = WindowEvent.motion.x;
-            mousePosition.y = WindowEvent.motion.y;
-            create_menu_texts();
+            if (!SDL_PointInRect(&mousePosition, &TextRect4))
+            {
+                mousePosition.x = WindowEvent.motion.x;
+                mousePosition.y = WindowEvent.motion.y;
+                create_menu_texts();
 
-            if (SDL_PointInRect(&mousePosition, &TextRect0))
-                create_text("Continue the game", FONT_HOVER, &TextTexture0, &TextRect0, -25, 1);
-            else if (SDL_PointInRect(&mousePosition, &TextRect1))
-                create_text("New game", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1);
-            else if (SDL_PointInRect(&mousePosition, &TextRect2))
-                create_text("History", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
-            else if (SDL_PointInRect(&mousePosition, &TextRect3))
-                create_text("Leaderboard", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1);
-            else if (SDL_PointInRect(&mousePosition, &TextRect4))
-                create_text("Leave", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1);
-            break;
+                if (SDL_PointInRect(&mousePosition, &TextRect0))
+                    create_text("Continue the game", FONT_HOVER, &TextTexture0, &TextRect0, -25, 1);
+                else if (SDL_PointInRect(&mousePosition, &TextRect1))
+                    create_text("New game", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1);
+                else if (SDL_PointInRect(&mousePosition, &TextRect2))
+                    create_text("History", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
+                else if (SDL_PointInRect(&mousePosition, &TextRect3))
+                    create_text("Leaderboard", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1);
+                else if (SDL_PointInRect(&mousePosition, &TextRect4))
+                    create_text("Leave", FONT_HOVER, &TextTexture4, &TextRect4, TextRect3.y + TextRect3.h, 1);
+                break;
+            }
         }
     }
     return true;
@@ -299,52 +302,58 @@ bool is_polling_event_difficulties(char *username)
 void render()
 {
 
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
     SDL_RenderClear(Renderer);
     SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
     if (save)
     {
         SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
     }
-    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); 
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1);
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
     SDL_RenderCopy(Renderer, TextTexture3, NULL, &TextRect3);
     SDL_RenderCopy(Renderer, TextTexture4, NULL, &TextRect4);
     SDL_RenderCopy(Renderer, TextTexture5, NULL, &TextRect5);
-    SDL_RenderPresent(Renderer); 
-    SDL_Delay(10);               
+    SDL_RenderPresent(Renderer);
+    SDL_Delay(10);
 }
 
 void render_new_game()
 {
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
     SDL_RenderClear(Renderer);
-    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL); 
-    SDL_RenderPresent(Renderer);                      
-    SDL_Delay(10);                                   
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
+    SDL_RenderPresent(Renderer);
+    SDL_Delay(10);
 }
 
 void render_difficulties()
 {
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); 
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
     SDL_RenderClear(Renderer);
     SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
     SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
-    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); 
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1);
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
     SDL_RenderCopy(Renderer, EasyTexture, NULL, &EasyRect);
     SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
     SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
-    SDL_RenderPresent(Renderer); 
-    SDL_Delay(10);               
+    SDL_RenderPresent(Renderer);
+    SDL_Delay(10);
 }
 
 void check_save()
 {
     FILE *fp = fopen("data/save.txt", "r");
     if (fp != NULL)
+    {
+        fclose(fp);
         save = 1;
-    fclose(fp);
+    }
+    else
+    {
+        save = 0;
+    }
 }
 
 bool create_menu_texts()
@@ -434,8 +443,8 @@ void display_score()
     for (int i = 0; i < 5; i++)
     {
         snprintf(ScoreInChar, sizeof(ScoreInChar), "%d", ranking[i].score);
-        renderCombatText(ScoreInChar, 820, 200 + (i * 70), 32);
-        renderCombatText(ranking[i].username, 420, 200 + (i * 70), 32);
+        renderCombatText(ScoreInChar, 820, 240 + (i * 70), 32);
+        renderCombatText(ranking[i].username, 420, 240 + (i * 70), 32);
     }
     SDL_UpdateWindowSurface(gWindow);
 
@@ -597,6 +606,7 @@ void display_difficulties(char *username)
 
     start_game();
 }
+
 void FadeDifficulty(int inout)
 {
     int width, height;
@@ -626,6 +636,7 @@ void FadeDifficulty(int inout)
 
 void start_game()
 {
+    save_to_player();
     while (RETURN_TO_MENU == 0)
     {
         char *selected_map = map();
@@ -695,5 +706,3 @@ void clear_menu()
     SDL_DestroyTexture(NormalTexture);
     SDL_DestroyTexture(HardTexture);
 }
-
-

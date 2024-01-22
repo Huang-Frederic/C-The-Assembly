@@ -192,7 +192,8 @@ struct Player get_player()
     // use fscanf to read save.txt file
     FILE *save = fopen("data/save.txt", "r");
     if (save == NULL)
-    {   if (display_errors_on)
+    {
+        if (display_errors_on)
             fprintf(stderr, "An error while opening save.txt have occured!\n");
         close_SDL();
     }
@@ -399,61 +400,13 @@ char *get_country(char *map)
     }
 
     if (country == NULL)
-    {   
+    {
         if (display_errors_on)
             fprintf(stderr, "An error occured with the Syntax of the map Name!\n");
         close_SDL();
     }
 
     return country;
-}
-
-SDL_Surface *load_Pathed_Media(char *path, float scale)
-{
-    char full_path[255] = "data/";
-    strcat(full_path, path);
-    char ext[5] = ".png";
-    strcat(full_path, ext);
-
-    // Load splash image
-    SDL_Surface *originalSurface = IMG_Load(full_path);
-    if (originalSurface == NULL)
-    {
-        if (display_errors_on) {
-            fprintf(stderr, "%s\n", path);
-            fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
-        }
-        
-        close_SDL();
-    }
-
-    SDL_Surface *formattedSurface = SDL_ConvertSurfaceFormat(originalSurface, SDL_PIXELFORMAT_RGBA32, 0);
-
-    if (formattedSurface == NULL)
-    {
-        if (display_errors_on)
-            fprintf(stderr, "Unable to convert surface! SDL Error: %s\n", SDL_GetError());
-        close_SDL();
-    }
-
-    int desiredWidth = formattedSurface->w * scale;
-    int desiredHeight = formattedSurface->h * scale;
-
-    SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXELFORMAT_RGBA32);
-
-    if (scaledSurface == NULL)
-    {
-        if (display_errors_on)
-            fprintf(stderr, "Unable to scale surface! SDL Error: %s\n", SDL_GetError());
-        close_SDL();
-    }
-
-    SDL_BlitScaled(formattedSurface, NULL, scaledSurface, NULL);
-
-    SDL_FreeSurface(originalSurface);
-    SDL_FreeSurface(formattedSurface);
-
-    return scaledSurface;
 }
 
 SDL_Surface *load_Monster_Media(struct Monster monster, char *map)
@@ -1299,9 +1252,9 @@ void Cards_Fade(struct Player player, SDL_Rect cardDisplayRects[], int cardsToDi
 
         cardImages[i] = load_Pathed_Media(imagePath, 0.25);
         if (cardImages[i] == NULL)
-        {   
+        {
             if (display_errors_on)
-            fprintf(stderr, "Failed to load card image: %s\n", imagePath);
+                fprintf(stderr, "Failed to load card image: %s\n", imagePath);
             close_SDL();
         }
     }
@@ -1519,7 +1472,7 @@ void win_anim_rewards(SDL_Surface *screenCopy)
     for (int i = -200; i <= 420; i += 5)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
-        renderMap(load_Pathed_Media("others/chest", 1.5), 490, gScreenSurface->h / 5, 0, 0);
+        renderMap(load_Pathed_Media("others/chest", 1.5), i + 70, gScreenSurface->h / 5, 0, 0);
 
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -1714,13 +1667,23 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
 {
     struct Save save;
 
-    // Display the beginning of the save screen
-    SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
-    renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
-    FadeEffect(0, 0);
-    renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
+    ////////////////////////////////
+    int wanna_save = 1;
+    if (auto_save_on == 0)
+        if (!check_if_wanna_save())
+            wanna_save = 0;
+    ////////////////////////////////
+
+    if (wanna_save)
+    {
+        // Display the beginning of the save screen
+        SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+        renderCombatText("Saving .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        renderMap(load_Pathed_Media("Logo", 0.20), gScreenSurface->w - 255, gScreenSurface->h - 65, 0, 0);
+        FadeEffect(0, 0);
+        renderCombatText("Saving . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+    }
 
     // Get the save data
     FILE *save_file = fopen("data/save.txt", "r");
@@ -1764,7 +1727,7 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         // write to file
         save_file = fopen("data/save.txt", "w");
         if (save_file == NULL)
-        {   
+        {
             if (display_errors_on)
                 fprintf(stderr, "Error opening file the save file during treasure save!\n");
             close_SDL();
@@ -1783,12 +1746,15 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         }
     }
 
-    // Display the end of the save screen
-    SDL_Delay(500);
-    renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
-    SDL_UpdateWindowSurface(gWindow);
-    FadeEffect(0, 1);
-    fclose(save_file);
+    if (wanna_save)
+    {
+        save_to_player();
+        // Display the end of the save screen
+        SDL_Delay(500);
+        renderCombatText("Saving . . .", gScreenSurface->w - 200, gScreenSurface->h - 60, 32);
+        SDL_UpdateWindowSurface(gWindow);
+        FadeEffect(0, 1);
+    }
 }
 
 void combat_lost()
@@ -1907,7 +1873,7 @@ void lose_display_leaderboard(SDL_Surface *screenCopy, struct Save *save)
     char ScoreInChar[15];
     int player_ranking = 6;
 
-    sprintf(message_diff, "You are %d points from the Top 5", score_diff);
+    sprintf(message_diff, "You're at %d points from the Top 5", score_diff);
 
     for (int i = 0; i < 5; i++)
     {
@@ -1991,7 +1957,7 @@ void delete_save()
     if (file == NULL)
     {
         if (display_errors_on)
-            perror("Error opening file");
+            perror("Error opening save.Txt");
         close_SDL();
         return;
     }
@@ -2005,7 +1971,31 @@ void delete_save()
     else
     {
         if (display_errors_on)
-            fprintf(stderr, "Unable to delete the file\n");
+            fprintf(stderr, "Unable to delete save.txt\n");
+        close_SDL();
+    }
+
+    // Check if the player_file exist
+    const char *player_file_name = "data/player_save.txt";
+    FILE *player_file = fopen(player_file_name, "r");
+    if (player_file == NULL)
+    {
+        if (display_errors_on)
+            perror("Error opening player_file.txt");
+        close_SDL();
+        return;
+    }
+    fclose(player_file);
+
+    // Attempt to delete the player_file
+    if (remove(player_file_name) == 0)
+    {
+        // Return to menu
+    }
+    else
+    {
+        if (display_errors_on)
+            fprintf(stderr, "Unable to delete player_save.txt\n");
         close_SDL();
     }
 
