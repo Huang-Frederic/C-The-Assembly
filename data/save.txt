@@ -1,11 +1,11 @@
 10
-1
-Cadeon
-20
+2
+ARKAYZ
+200
 100
 100
 5
-0
+61
 __Player__Pointer-Pistol-Shot
 __Player__Pointer-Pistol-Shot
 __Player__C-Bang-Pointer-Pop
