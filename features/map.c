@@ -18,6 +18,9 @@ char *map()
     int map_occurrence = rand() % 2 + 2;
     char map_chosen[3][20];
     SDL_Surface *background = load_Background_Media_Map(background_image);
+    SDL_Surface *menu_button = load_Pathed_Media("others/menu_button", 0.8);
+    SDL_Surface *menu_button_hovered = load_Pathed_Media("others/menu_button_hover", 0.8);
+    SDL_Rect Rect_menu = {10, -20, 0, 0};
     SDL_Surface *maps[map_occurrence];
     int faded = 0;
 
@@ -72,6 +75,11 @@ char *map()
                             return returned_map;
                         }
                     }
+                    if (x >= 40 && x < 40 + menu_button->w && y >= 30 && y < 30 + menu_button->h - 100)
+                    {
+                        return_to_menu();
+                        return NULL;
+                    }
                 }
             }
         }
@@ -122,6 +130,14 @@ char *map()
                 renderMap(maps[i], mapX + 10, mapY, 0, 0);
                 renderTextChosen(gScreenSurface, title_chosen[i], textX, textY);
             }
+            if (x >= 40 && x < 40 + menu_button->w && y >= 30 && y < 30 + menu_button->h - 100)
+            {
+                renderMap(menu_button_hovered, 40, -20, 0, 0);
+            }
+            else
+            {
+                renderMap(menu_button, 40, -20, 0, 0);
+            }
         }
 
         faded = FadeEffect(faded, 0);
@@ -148,7 +164,8 @@ SDL_Surface *load_Pathed_Media_Map(char *path, float scale)
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        if (display_errors_on) {
+        if (display_errors_on)
+        {
             printf("%s\n", path);
             printf("Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
         }
@@ -195,7 +212,8 @@ SDL_Surface *loadMedia(char *path, float scale)
     SDL_Surface *originalSurface = IMG_Load(full_path);
     if (originalSurface == NULL)
     {
-        if (display_errors_on) {
+        if (display_errors_on)
+        {
             fprintf(stderr, "%s\n", path);
             fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", full_path, SDL_GetError());
         }
@@ -473,5 +491,36 @@ void display_map_score()
         SDL_Rect textRect = {x, y, 0, 0};
         SDL_BlitSurface(message, NULL, gScreenSurface, &textRect);
         SDL_FreeSurface(message);
+    }
+}
+
+void return_to_menu()
+{
+    FadeEffect(1, 1);
+    RETURN_TO_MENU = 1;
+
+    if (auto_save_on == 0)
+    {
+        FILE *fp = fopen("data/player_save.txt", "r");
+        FILE *ft = fopen("data/save.txt", "w");
+        if (ft != NULL && fp != NULL)
+        {
+            int ch;
+            while ((ch = fgetc(fp)) != EOF)
+            {
+                fputc(ch, ft);
+            }
+
+            fclose(ft);
+            fclose(fp);
+        }
+    }
+    // Check if the player_file exist
+    const char *player_file_name = "data/player_save.txt";
+    FILE *player_file = fopen(player_file_name, "r");
+    if (player_file != NULL)
+    {
+        fclose(player_file);
+        remove(player_file_name);
     }
 }

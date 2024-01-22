@@ -12,3 +12,5 @@ void addSpaceBeforeUppercase(char *str);
 int FadeEffect(int faded, int inOut);
 int get_save_day();
 void display_map_score();
+void display_menu_button();
+void return_to_menu();

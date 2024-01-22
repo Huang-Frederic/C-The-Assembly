@@ -646,13 +646,17 @@ void FadeDifficulty(int inout)
 
 void start_game()
 {
+    RETURN_TO_MENU = 0;
     save_to_player();
     while (RETURN_TO_MENU == 0)
     {
         char *selected_map = map();
         if (display_errors_on)
             fprintf(stderr, "Selected: %s\n\n", selected_map);
-        event(selected_map);
+        if (RETURN_TO_MENU == 0)
+        {
+            event(selected_map);
+        }
     }
 }
 
