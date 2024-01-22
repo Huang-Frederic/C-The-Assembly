@@ -303,7 +303,7 @@ struct Monster get_monster(char *map, struct Player *player)
         }
         else
         {
-            monster.health += monster.health * (player->difficulty / 100);
+            monster.health += (int)(monster.health * ((float)player->difficulty / 100));
         }
         monster.health += monster.health * (0.05 * player->day);
         monster.maxHealth = monster.health;
@@ -338,7 +338,7 @@ struct Monster get_monster(char *map, struct Player *player)
     return monster;
 }
 
-struct Card get_card(char card_name[30])
+struct Card get_card(char card_name[35])
 {
     struct Card card;
 
@@ -357,10 +357,11 @@ struct Card get_card(char card_name[30])
     }
 
     // use fscanf to read the card_name file
-    strcat(card_name, ".txt");
+    
     char path[50] = "data/cards/";
     strcat(path, card_name);
-
+    strcat(path, ".txt");
+    
     strcpy(card.path, card_name);
 
     FILE *card_file = fopen(path, "r");
@@ -1721,7 +1722,8 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         {
             score_points = 100;
         }
-        save.score += score_points + (score_points * (save.day * 0.05)) + (score_points * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : save.difficulty / 100));
+        save.score += score_points + (score_points * (save.day * 0.05)) + (int)(score_points * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : (float)save.difficulty / 100));
+        printf("\n\nScore Point : %d", save.score);
         save.hp = player.health + rewards.health;
         save.max_hp = player.maxHealth + rewards.health;
         save.day++;

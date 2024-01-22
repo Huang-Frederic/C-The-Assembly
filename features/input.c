@@ -63,7 +63,7 @@ void input()
                 {
                     if (strpbrk(username, check_char) != NULL)
                     {
-                        FadeEffect(0, 1);
+                        // FadeEffect(0, 1);
                         clicked = 1;
                         display_difficulties(username);
                     }

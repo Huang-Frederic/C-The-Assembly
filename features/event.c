@@ -82,7 +82,7 @@ void save_camp()
 
         // Apply the changes
         save.hp = save.hp + (save.max_hp * 0.75) > save.max_hp ? save.max_hp : save.hp + (save.max_hp * 0.75);
-        save.score += 20 + (20 * (save.day * 0.05)) + (20 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : save.difficulty / 100));
+        save.score += 20 + (20 * (save.day * 0.05)) + (int)(20 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : (float)save.difficulty / 100));
         save.day++;
 
         // write to file
@@ -243,7 +243,7 @@ void save_treasure(struct Treasure treasure)
 
         // Apply the changes
         save.max_energy = save.max_energy + treasure.energy > 28 ? 28 : save.max_energy + treasure.energy;
-        save.score += 10 + (10 * (save.day * 0.05)) + (10 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : save.difficulty / 100));
+        save.score += 10 + (10 * (save.day * 0.05)) + (int)(10 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25 : save.difficulty == 0 ? 0 : (float)save.difficulty / 100));
         save.day++;
         int new_cards = treasure.if_no_energy_card == NULL ? 1 : 2;
         save.deck_size = save.deck_size + new_cards;

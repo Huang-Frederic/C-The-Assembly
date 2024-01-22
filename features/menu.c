@@ -331,7 +331,7 @@ bool is_polling_event_custom_difficulty(char *username)
                 {
                     custom_difficulty -= (custom_difficulty > -50 ? (custom_difficulty == 10 ? 20 : 10) : 0); 
                     if (display_errors_on) 
-                        fprintf(stderr, "\nCustom: %d", custom_difficulty);
+                        fprintf(stderr, "Custom: %d\n", custom_difficulty);
                     create_custom_difficulty();
                 }
 
@@ -339,7 +339,7 @@ bool is_polling_event_custom_difficulty(char *username)
                 {
                     custom_difficulty += (custom_difficulty < 200 ? (custom_difficulty == -10 ? 20 : 10) : 0);  
                     if (display_errors_on)
-                        fprintf(stderr, "\nCustom: %d", custom_difficulty);
+                        fprintf(stderr, "Custom: %d\n", custom_difficulty);
                     create_custom_difficulty();
                 }
 
