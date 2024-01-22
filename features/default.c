@@ -96,9 +96,17 @@ void close_SDL()
             fclose(fp);
         }
     }
-    remove("data/player_save.txt");
+    // Check if the player_file exist
+    const char *player_file_name = "data/player_save.txt";
+    FILE *player_file = fopen(player_file_name, "r");
+    if (player_file != NULL)
+    {
+        fclose(player_file);
+        remove(player_file_name);
+    }
     // Quit SDL subsystems
     SDL_Quit();
+    exit(0);
 }
 
 void get_auto_save()

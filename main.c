@@ -19,12 +19,9 @@ int main(int argc, char *args[])
     // insert(2700, "Hisshiden");
     // insert(3000, "Stephane");
     // insert(4200, "Franck");
-    // insert(5900, "Donnesh");
+    // insert(101001, "Mr-Neveu");
     while (1)
     {
         display_menu();
     }
-
-    close_SDL();
-    return 0;
 }

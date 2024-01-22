@@ -122,6 +122,7 @@ bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Tex
 
 bool is_polling_event_menu()
 {
+    int close_menu = 0;
     while (SDL_PollEvent(&WindowEvent))
     {
         switch (WindowEvent.type)
@@ -167,11 +168,12 @@ bool is_polling_event_menu()
                 {
                     clear_menu();
                     close_SDL();
+                    close_menu = 1;
                 }
             }
 
         case SDL_MOUSEMOTION:
-            if (!SDL_PointInRect(&mousePosition, &TextRect4))
+            if (!close_menu)
             {
                 mousePosition.x = WindowEvent.motion.x;
                 mousePosition.y = WindowEvent.motion.y;
