@@ -63,5 +63,6 @@ int save = 0;
 int menu_event = 0;
 int tuto = 0;
 int custom_difficulty = 10;
+int custom_game = 0;
 
 extern struct Ranking ranking[5];

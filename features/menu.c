@@ -185,7 +185,7 @@ bool is_polling_event_menu()
                 else if (SDL_PointInRect(&mousePosition, &TextRect1))
                     create_text("New game", FONT_HOVER, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1);
                 else if (SDL_PointInRect(&mousePosition, &TextRect2))
-                    create_text("History", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
+                    create_text("Story", FONT_HOVER, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1);
                 else if (SDL_PointInRect(&mousePosition, &TextRect3))
                     create_text("Leaderboard", FONT_HOVER, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1);
                 else if (SDL_PointInRect(&mousePosition, &TextRect4))
@@ -269,18 +269,21 @@ bool is_polling_event_difficulties(char *username)
                 if (SDL_PointInRect(&mousePosition, &EasyRect))
                 {
                     create_save(-1, username);
+                    clear_menu();
                     return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &NormalRect))
                 {
                     create_save(0, username);
+                    clear_menu();
                     return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &HardRect))
                 {
                     create_save(1, username);
+                    clear_menu();
                     return false;
                 }
 
@@ -345,14 +348,13 @@ bool is_polling_event_custom_difficulty(char *username)
 
                 else if (SDL_PointInRect(&mousePosition, &TextRect0))
                 {
-                    display_difficulties(username);
                     return false;
                 }
 
                 else if (SDL_PointInRect(&mousePosition, &ValidRect))
                 {
                     create_save(custom_difficulty, username);
-                    start_game();
+                    custom_game = 1;
                     return false;
                 }
             }
@@ -445,7 +447,7 @@ bool create_menu_texts()
     }
     if (!create_text("New game", FONT_NORMAL, &TextTexture1, &TextRect1, save ? TextRect0.y + TextRect0.h : 50, 1))
         return false;
-    if (!create_text("History", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1))
+    if (!create_text("Story", FONT_NORMAL, &TextTexture2, &TextRect2, TextRect1.y + TextRect1.h, 1))
         return false;
     if (!create_text("Leaderboard", FONT_NORMAL, &TextTexture3, &TextRect3, TextRect2.y + TextRect2.h, 1))
         return false;
@@ -528,6 +530,7 @@ void display_menu()
         display_score();
         break;
     }
+    menu_event = 0;
 }
 
 void display_score()
@@ -754,6 +757,14 @@ void display_custom_difficulty(char *username)
     {
         render_custom_difficulty();
     }
+
+    if (custom_game) {
+        custom_game = 0;
+        start_game();
+    } else {
+        display_difficulties(username);
+    }
+        
 }
 
 void start_game()
@@ -820,6 +831,9 @@ void clear_menu()
     SDL_FreeSurface(EasyImg);
     SDL_FreeSurface(NormalImg);
     SDL_FreeSurface(HardImg);
+    SDL_FreeSurface(RemoveImg);
+    SDL_FreeSurface(AddImg);
+    SDL_FreeSurface(ValidImg);
     BackgroundImg = NULL;
     SDL_DestroyTexture(TextTexture0);
     SDL_DestroyTexture(TextTexture1);
@@ -830,5 +844,9 @@ void clear_menu()
     SDL_DestroyTexture(ImgTexture);
     SDL_DestroyTexture(EasyTexture);
     SDL_DestroyTexture(NormalTexture);
-    SDL_DestroyTexture(HardTexture);
+    SDL_DestroyTexture(RemoveTexture);
+    SDL_DestroyTexture(AddTexture);
+    SDL_DestroyTexture(ValidTexture);
+  
+
 }
