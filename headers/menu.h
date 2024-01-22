@@ -6,11 +6,11 @@ SDL_Color TextColor = {255, 255, 255, 0};
 TTF_Font *Font;                           
 SDL_Surface *TextSurface;                 
 SDL_Surface *BackgroundImg = NULL;
-SDL_Surface *EasyImg, *NormalImg, *HardImg;
+SDL_Surface *EasyImg, *NormalImg, *HardImg, *PersoImg;
 SDL_Texture *ImgTexture;
-SDL_Texture *EasyTexture, *NormalTexture, *HardTexture;                                               
+SDL_Texture *EasyTexture, *NormalTexture, *HardTexture, *PersoTexture;                                               
 SDL_Texture *TextTexture0, *TextTexture1, *TextTexture2, *TextTexture3, *TextTexture4, *TextTexture5; 
-SDL_Rect EasyRect, NormalRect, HardRect;
+SDL_Rect EasyRect, NormalRect, HardRect, PersoRect;
 SDL_Rect TextRect0, TextRect1, TextRect2, TextRect3, TextRect4, TextRect5; 
 SDL_Point mousePosition;
 

@@ -281,17 +281,19 @@ bool check_if_wanna_save()
                 int y = gScreenSurface->h / 2;
                 if (mouseX >= Rect_yes.x && mouseX < Rect_yes.x + Rect_yes.w && mouseY >= Rect_yes.y && mouseY < Rect_yes.y + Rect_yes.h)
                 {
+                    clicked = 1;
                     return true;
                     break;
                 }
                 // no
                 else if (mouseX >= Rect_no.x && mouseX < Rect_no.x + Rect_no.w && mouseY >= Rect_no.y && mouseY < Rect_no.y + Rect_no.h)
                 {
+                    clicked = 1;
                     return false;
                     break;
                 }
 
-                clicked = 1;
+                // clicked = 1;
             }
             if (e.type == SDL_MOUSEMOTION)
             {

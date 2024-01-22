@@ -289,11 +289,13 @@ bool is_polling_event_difficulties(char *username)
             create_difficulties();
 
             if (SDL_PointInRect(&mousePosition, &EasyRect))
-                create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 250, 1);
+                create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 100, 1);
             else if (SDL_PointInRect(&mousePosition, &NormalRect))
-                create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 550, 1);
+                create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 400, 1);
             else if (SDL_PointInRect(&mousePosition, &HardRect))
-                create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 850, 1);
+                create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 700, 1);
+            else if (SDL_PointInRect(&mousePosition, &PersoRect))
+                create_difficulty("Perso", PersoImg, &PersoTexture, &HardRect, 1000, 1);
             break;
         }
     }
@@ -337,9 +339,11 @@ void render_difficulties()
     SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
     SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1);
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
+    SDL_RenderCopy(Renderer, TextTexture3, NULL, &TextRect3);
     SDL_RenderCopy(Renderer, EasyTexture, NULL, &EasyRect);
     SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
     SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
+    SDL_RenderCopy(Renderer, PersoTexture, NULL, &PersoRect);
     SDL_RenderPresent(Renderer);
     SDL_Delay(10);
 }
@@ -378,17 +382,21 @@ bool create_menu_texts()
 
 bool create_difficulties()
 {
-    if (!create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 250, 0))
+    if (!create_difficulty("Easy", EasyImg, &EasyTexture, &EasyRect, 100, 0))
         return false;
-    if (!create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 550, 0))
+    if (!create_difficulty("Normal", NormalImg, &NormalTexture, &NormalRect, 400, 0))
         return false;
-    if (!create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 850, 0))
+    if (!create_difficulty("Hard", HardImg, &HardTexture, &HardRect, 700, 0))
+        return false;
+    if (!create_difficulty("Perso", PersoImg, &PersoTexture, &PersoRect, 1000, 0))
         return false;
     if (!create_difficulty_text("Easy", 50, &TextTexture0, &TextRect0, EasyRect.x + EasyRect.w / 2))
         return false;
     if (!create_difficulty_text("Normal", 50, &TextTexture1, &TextRect1, NormalRect.x + NormalRect.w / 2))
         return false;
     if (!create_difficulty_text("Hard", 50, &TextTexture2, &TextRect2, HardRect.x + HardRect.w / 2))
+        return false;
+    if (!create_difficulty_text("Custom", 50, &TextTexture3, &TextRect3, PersoRect.x + PersoRect.w / 2))
         return false;
     return true;
 }
