@@ -126,7 +126,7 @@ struct Treasure get_treasure()
     if (save_file == NULL)
     {
         if (display_errors_on)
-        fprintf(stderr, "Error opening file the save file during treasure!\n");
+            fprintf(stderr, "Error opening file the save file during treasure!\n");
         close_SDL();
     }
     else
@@ -139,7 +139,7 @@ struct Treasure get_treasure()
         if (max_energy == 28)
         {
             if (display_errors_on)
-            fprintf(stderr, "Max Energy Amount reached !\n");
+                fprintf(stderr, "Max Energy Amount reached !\n");
             treasure.card = strdup(get_treasure_card());
             treasure.if_no_energy_card = get_treasure_card();
         }
@@ -229,7 +229,7 @@ void save_treasure(struct Treasure treasure)
     if (save_file == NULL)
     {
         if (display_errors_on)
-        fprintf(stderr, "Error opening file the save file during camp save!\n");
+            fprintf(stderr, "Error opening file the save file during camp save!\n");
         close_SDL();
     }
     else
@@ -255,7 +255,7 @@ void save_treasure(struct Treasure treasure)
         if (save_file == NULL)
         {
             if (display_errors_on)
-            fprintf(stderr, "Error opening file the save file during treasure save!\n");
+                fprintf(stderr, "Error opening file the save file during treasure save!\n");
             close_SDL();
         }
         else
@@ -288,16 +288,19 @@ void save_treasure(struct Treasure treasure)
 
 void display_treasure(struct Treasure treasure)
 {
-    if (display_errors_on) {
-        fprintf(stderr,  "T1 : %s\n", treasure.card);
+    if (display_errors_on)
+    {
+        fprintf(stderr, "Mana : %d\n", treasure.energy);
+        fprintf(stderr, "T1 : %s\n", treasure.card);
         fprintf(stderr, "T2 : %s\n\n", treasure.if_no_energy_card);
     }
-        
 
     SDL_Event e;
     int clicked = 0;
     char first_treasure[60] = "cards/sprites/";
     char second_treasure[60] = "cards/sprites/";
+    strcat(second_treasure, treasure.card);
+    strcat(first_treasure, treasure.if_no_energy_card);
 
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("Click to open the chest", 430, gScreenSurface->h - 200, 32);
@@ -357,10 +360,8 @@ void display_treasure(struct Treasure treasure)
     }
     else
     {
-        strcat(first_treasure, treasure.if_no_energy_card);
         renderMap(load_Pathed_Media(first_treasure, 0.3), 310, gScreenSurface->h / 3 - 40, 0, 0);
     }
-    strcat(second_treasure, treasure.card);
     renderMap(load_Pathed_Media(second_treasure, 0.3), 710, gScreenSurface->h / 3 - 40, 0, 0);
 
     SDL_UpdateWindowSurface(gWindow);
