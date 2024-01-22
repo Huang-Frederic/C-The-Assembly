@@ -23,6 +23,7 @@ int main(int argc, char *args[])
     while (1)
     {
         display_menu();
+        // event("Camp");
     }
 
     close_SDL();

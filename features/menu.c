@@ -183,33 +183,48 @@ int is_polling_event_menu()
 
 bool is_polling_event_new_game()
 {
-    while (SDL_PollEvent(&WindowEvent))
+    //////////////////////
+    SurfaceTheRender(0, 1);
+    SDL_Event e;
+    int clicked = 0;
+    while (SDL_PollEvent(&e) != 0 || clicked == 0)
     {
-        switch (WindowEvent.type)
+        if (e.type == SDL_QUIT)
         {
-        case SDL_QUIT:
-            clear_score();
+            printf("\n\nQuiting ...\n\n");
             close_SDL();
-            return false;
+        }
+        if (e.type == SDL_MOUSEBUTTONDOWN)
+        {
+            clicked = 1;
+        }
+    }
+    SurfaceTheRender(1, 1);
+    //////////////////////
+    switch (WindowEvent.type)
+    {
+    case SDL_QUIT:
+        clear_score();
+        close_SDL();
+        return false;
 
-        case SDL_MOUSEBUTTONDOWN:
-            if (WindowEvent.button.button == SDL_BUTTON_LEFT)
+    case SDL_MOUSEBUTTONDOWN:
+        if (WindowEvent.button.button == SDL_BUTTON_LEFT)
+        {
+            switch (tuto)
             {
-                switch (tuto)
-                {
-                case 0:
-                    ++tuto;
-                    display_tuto(1);
-                    return false;
-                case 1:
-                    ++tuto;
-                    display_tuto(2);
-                    return false;
-                case 2:
-                    tuto = 0;
-                    input();
-                    return false;
-                }
+            case 0:
+                ++tuto;
+                display_tuto(1);
+                return false;
+            case 1:
+                ++tuto;
+                display_tuto(2);
+                return false;
+            case 2:
+                tuto = 0;
+                input();
+                return false;
             }
         }
     }
@@ -301,7 +316,7 @@ void render_difficulties()
 {
     SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
     SDL_RenderClear(Renderer);
-    // SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
     SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
     SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); // Add text to render queue.
     SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
@@ -399,6 +414,9 @@ void display_score()
     char ScoreInChar[15];
     SDL_Event e;
 
+    SDL_Surface *Background = load_Pathed_Media("menu/MenuBack", 1);
+    display_background(Background);
+
     renderCombatText("LeaderBoard", 500, 120, 48);
     for (int i = 0; i < 5; i++)
     {
@@ -440,7 +458,7 @@ void display_new_game()
         printf("\nFailed to load media!");
         close_SDL();
     }
-    SurfaceTheRender(0, 1);
+
     while (is_polling_event_new_game())
     {
         render_new_game();
@@ -534,24 +552,57 @@ void display_tuto(int num)
     }
     while (is_polling_event_new_game())
     {
+
         render_new_game();
     }
 }
 
 void display_difficulties(char *username)
 {
-    ;
-    if (!load_menu_background("data/menu/difficulties.png"))
+
+    if (!load_menu_background("data/menu/MenuBack.png"))
     {
         printf("\nFailed to load media!");
         close_SDL();
     }
     create_difficulties();
+
+    FadeDifficulty(0);
+
     while (is_polling_event_difficulties(username))
     {
         render_difficulties();
     }
+
+    FadeDifficulty(1);
+
     start_game();
+}
+void FadeDifficulty(int inout)
+{
+    int width, height;
+
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255); // Make window bg black.
+    SDL_RenderClear(Renderer);
+    SDL_RenderCopy(Renderer, ImgTexture, NULL, NULL);
+    SDL_RenderCopy(Renderer, TextTexture0, NULL, &TextRect0);
+    SDL_RenderCopy(Renderer, TextTexture1, NULL, &TextRect1); // Add text to render queue.
+    SDL_RenderCopy(Renderer, TextTexture2, NULL, &TextRect2);
+    SDL_RenderCopy(Renderer, EasyTexture, NULL, &EasyRect);
+    SDL_RenderCopy(Renderer, NormalTexture, NULL, &NormalRect);
+    SDL_RenderCopy(Renderer, HardTexture, NULL, &HardRect);
+
+    SDL_GetRendererOutputSize(Renderer, &width, &height);
+
+    SDL_Surface *surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_RenderReadPixels(Renderer, NULL, SDL_PIXELFORMAT_ARGB8888, surface->pixels, surface->pitch);
+    SDL_Surface *finalSurface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+    SDL_BlitSurface(finalSurface, NULL, gScreenSurface, NULL);
+
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(finalSurface);
+
+    FadeEffect(0, inout);
 }
 
 void start_game()

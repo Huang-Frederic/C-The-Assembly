@@ -68,7 +68,8 @@ void save_camp()
 
         // Apply the changes
         save.hp = save.hp + (save.max_hp * 0.75) > save.max_hp ? save.max_hp : save.hp + (save.max_hp * 0.75);
-        save.score += 20 + (20 * (save.day * 0.05));
+        save.score += 20 + (20 * (save.day * 0.05)) + (20 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25
+                                                                                                                  : 0));
         save.day++;
 
         // write to file
@@ -211,7 +212,8 @@ void save_treasure(struct Treasure treasure)
 
         // Apply the changes
         save.max_energy = save.max_energy + treasure.energy > 28 ? 28 : save.max_energy + treasure.energy;
-        save.score += 10 + (10 * (save.day * 0.05));
+        save.score += 10 + (10 * (save.day * 0.05)) + (10 * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25
+                                                                                                                  : 0));
         save.day++;
         int new_cards = treasure.if_no_energy_card == NULL ? 1 : 2;
         save.deck_size = save.deck_size + new_cards;
@@ -249,14 +251,17 @@ void save_treasure(struct Treasure treasure)
 
 void display_treasure(struct Treasure treasure)
 {
+    printf("T1 : %s\n", treasure.card);
+    printf("T2 : %s\n\n", treasure.if_no_energy_card);
+
     SDL_Event e;
     int clicked = 0;
-    char first_treasure[30] = "cards/sprites/";
-    char second_treasure[30] = "cards/sprites/";
+    char first_treasure[60] = "cards/sprites/";
+    char second_treasure[60] = "cards/sprites/";
 
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("Click to open the chest", 430, gScreenSurface->h - 200, 32);
-    renderMap(load_Pathed_Media("others/chest", 2), 440, gScreenSurface->h / 5, 0, 0);
+    renderMap(load_Pathed_Media("others/chest", 1.5), 490, gScreenSurface->h / 5, 0, 0);
     SDL_UpdateWindowSurface(gWindow);
 
     FadeEffect(0, 0);
@@ -280,7 +285,7 @@ void display_treasure(struct Treasure treasure)
     clicked = 0;
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
     renderCombatText("Click again to see the rewards", 390, gScreenSurface->h - 200, 32);
-    renderMap(load_Pathed_Media("others/chest_open", 2.2), 420, gScreenSurface->h / 5, 0, 0);
+    renderMap(load_Pathed_Media("others/chest_open", 1.6), 480, gScreenSurface->h / 5, 0, 0);
     SDL_UpdateWindowSurface(gWindow);
 
     while (clicked == 0)

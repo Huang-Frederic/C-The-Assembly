@@ -37,6 +37,7 @@ bool create_save(int difficulty, char *username);
 bool create_save_file(const struct Save save);
 bool create_difficulty(char *difficulty, SDL_Surface *DifficultySurface, SDL_Texture **DifficultyTexture, SDL_Rect *DifficultyRect, int x, int ishover);
 bool create_difficulties();
+void FadeDifficulty(int inout);
 void start_game();
 
 int save = 0;

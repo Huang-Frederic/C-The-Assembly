@@ -4,12 +4,15 @@ void input()
 {
     // Display the camp screen
     SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+    SDL_Surface *Background = load_Pathed_Media("menu/MenuBack", 1);
+    display_background(Background);
 
     char *username = malloc(sizeof(char) * 30);
-    username[0] = '\0';
+    strcpy(username, "Cadeon");
+    username[7] = '\0';
     char check_char[80] = {"ABCDEFGHIJKLMNOPQRSTUVWXZYabcdefghijklmnopqrstuvwxyz"};
-    char message_temp[100];
-    int user_len = 0;
+    char message_temp[100] = {"\0"};
+    int user_len = 7;
     int textWidth;
     int xCentered;
     SDL_Event e;
@@ -18,11 +21,12 @@ void input()
     renderCombatText("Please type your username", 300, gScreenSurface->h / 3 - 100, 48);
     renderMap(load_Pathed_Media("Player", 2), 450, gScreenSurface->h / 3 - 100, 0, 0);
     renderCombatText("Enter to continue ...", gScreenSurface->w - 350, gScreenSurface->h - 60, 28);
-    strcat(message_temp, "Binary");
+    strcpy(message_temp, username);
     textWidth = strlen(message_temp) * 28;
     xCentered = (gScreenSurface->w - textWidth) / 2;
     renderCombatText(message_temp, xCentered, gScreenSurface->h / 2 + 130, 48);
-    SDL_UpdateWindowSurface(gWindow);
+
+    FadeEffect(0, 0);
 
     while (clicked == 0)
     {
@@ -57,6 +61,7 @@ void input()
                 {
                     if (strpbrk(username, check_char) != NULL)
                     {
+                        FadeEffect(0, 1);
                         clicked = 1;
                         display_difficulties(username);
                     }
@@ -64,7 +69,7 @@ void input()
 
                 strcpy(message_temp, username);
                 SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
-
+                display_background(Background);
                 renderCombatText("Please type your username", 300, gScreenSurface->h / 3 - 100, 48);
                 renderCombatText("Enter to continue ...", gScreenSurface->w - 350, gScreenSurface->h - 60, 28);
                 renderMap(load_Pathed_Media("Player", 2), 450, gScreenSurface->h / 3 - 100, 0, 0);

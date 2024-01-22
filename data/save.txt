@@ -1,11 +1,11 @@
-12
+10
 2
-AZE
-0
+CADEON
 1
-118
+100
+100
 5
-105
+100
 __Player__Pointer-Pistol-Shot
 __Player__Pointer-Pistol-Shot
 __Player__C-Bang-Pointer-Pop
@@ -15,6 +15,4 @@ __Player__C-Guard
 __Player__Celerity-Compiler
 __Player__Code-Breach
 __Player__Lethal-Remedy-Drop
-__Player__HemoHustle-Nudge
-__Player__C-Friendly
 __Player__HemoHustle-Nudge

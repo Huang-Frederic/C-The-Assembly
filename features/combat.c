@@ -1492,7 +1492,7 @@ void win_anim_rewards(SDL_Surface *screenCopy)
     for (int i = -200; i <= 420; i += 5)
     {
         SDL_BlitSurface(screenCopy, NULL, gScreenSurface, NULL);
-        renderMap(load_Pathed_Media("others/chest", 2.2), i, gScreenSurface->h / 4, 0, 0);
+        renderMap(load_Pathed_Media("others/chest", 1.5), 490, gScreenSurface->h / 5, 0, 0);
 
         SDL_UpdateWindowSurface(gWindow);
     }
@@ -1519,7 +1519,7 @@ void win_anim_rewards(SDL_Surface *screenCopy)
         }
     }
 
-    renderMap(load_Pathed_Media("others/chest_open", 2.2), 420, gScreenSurface->h / 4, 0, 0);
+    renderMap(load_Pathed_Media("others/chest_open", 1.6), 480, gScreenSurface->h / 5, 0, 0);
     SDL_UpdateWindowSurface(gWindow);
     SDL_Delay(600);
     renderMap(load_Pathed_Media("others/arrow", 0.7), gScreenSurface->w - 500, gScreenSurface->h - 200, 0, 0);
@@ -1718,7 +1718,8 @@ void save_combat(struct Rewards rewards, struct Player player, struct Monster mo
         {
             score_points = 100;
         }
-        save.score += score_points + (score_points * (save.day * 0.05));
+        save.score += score_points + (score_points * (save.day * 0.05)) + (score_points * (save.difficulty == -1 ? -0.25 : save.difficulty == 1 ? 0.25
+                                                                                                                                                : 0));
         save.hp = player.health + rewards.health;
         save.max_hp = player.maxHealth + rewards.health;
         save.day++;

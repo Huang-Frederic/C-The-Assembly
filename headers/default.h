@@ -19,6 +19,8 @@ TTF_Font *font = NULL;
 SDL_Event WindowEvent;
 SDL_Renderer *Renderer;
 
+int RETURN_TO_MENU = 0;
+
 // Init Functions
 void init();
 bool loadFont(const char *selectedFont, int font_size);
@@ -26,5 +28,10 @@ void close_SDL();
 bool create_window();
 bool load_media();
 void clear_window();
+void get_auto_save();
+void get_display_errors();
+
+int auto_save_on = 1;
+int display_errors_on = 1;
 
 #endif

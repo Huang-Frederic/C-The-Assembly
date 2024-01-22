@@ -1,8 +1,6 @@
 #include "../headers/include.h"
 #include "../headers/default.h"
 
-int RETURN_TO_MENU = 0;
-
 void init()
 {
     // Initialization flag
@@ -48,6 +46,9 @@ void init()
             SDL_SetWindowIcon(gWindow, icon);
         }
     }
+
+    get_auto_save();
+    get_display_errors();
 }
 
 bool loadFont(const char *selectedFont, int font_size)
@@ -70,4 +71,73 @@ void close_SDL()
 
     // Quit SDL subsystems
     SDL_Quit();
+}
+
+void get_auto_save()
+{
+    // use fscanf to read save.txt file
+    char line[255];
+    int Found = 0;
+
+    FILE *ini_file = fopen("c.ini", "r");
+    if (ini_file == NULL)
+    {
+        printf("An error while opening c.ini have occured!\n");
+        close_SDL();
+    }
+
+    while (fscanf(ini_file, " %[^\n]", line) != EOF)
+    {
+        if (strstr(line, "auto_save = On") != NULL)
+        {
+            auto_save_on = 1;
+            Found = 1;
+        }
+        else if (strstr(line, "auto_save = Off") != NULL)
+        {
+            auto_save_on = 0;
+            Found = 1;
+        }
+    }
+
+    if (!Found)
+    {
+        printf("auto_save in c.ini not found, auto_save have been set to On\n\n");
+    }
+
+    fclose(ini_file);
+}
+void get_display_errors()
+{
+    // use fscanf to read save.txt file
+    char line[255];
+    int Found = 0;
+
+    FILE *ini_file = fopen("c.ini", "r");
+    if (ini_file == NULL)
+    {
+        printf("An error while opening c.ini have occured!\n");
+        close_SDL();
+    }
+
+    while (fscanf(ini_file, " %[^\n]", line) != EOF)
+    {
+        if (strstr(line, "display_errors = On") != NULL)
+        {
+            display_errors_on = 1;
+            Found = 1;
+        }
+        else if (strstr(line, "display_errors = Off") != NULL)
+        {
+            display_errors_on = 0;
+            Found = 1;
+        }
+    }
+
+    if (!Found)
+    {
+        printf("display_errors in c.ini not found, display_errors have been set to On\n\n");
+    }
+
+    fclose(ini_file);
 }
