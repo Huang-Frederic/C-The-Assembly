@@ -768,7 +768,7 @@ bool player_action(struct Player *player, struct Monster *monster, struct Card c
         if (display_errors_on)
             fprintf(stderr, "%s Damage Output Pre-Buffs : %d\n", player->name, card.damage);
         card.damage = player->strength != 0 ? card.damage * 1.25 : card.damage;
-        card.damage = monster->vulnerability != 0 ? card.damage * 1.50 : card.damage;
+        card.damage = monster->vulnerability != 0 ? card.damage * 1.25 : card.damage;
         if (display_errors_on)
             fprintf(stderr, "%s Damage Output Post-Buffs : %d\n\n", player->name, card.damage);
 
@@ -960,7 +960,7 @@ void ennemy_action(int turns, struct Player *player, struct Monster *monster, SD
     if (display_errors_on)
         fprintf(stderr, "%s Damage Output Pre-Buffs : %d\n", monster->name, card.damage);
     card.damage = monster->strength != 0 ? card.damage * 1.25 : card.damage;
-    card.damage = player->vulnerability != 0 ? card.damage * 1.5 : card.damage;
+    card.damage = player->vulnerability != 0 ? card.damage * 1.25 : card.damage;
     card.damage += card.damage * (0.05 * player->day);
     card.heal += card.heal * (0.05 * player->day);
     card.armor += card.armor * (0.05 * player->day);

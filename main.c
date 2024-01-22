@@ -23,6 +23,6 @@ int main(int argc, char *args[])
     while (1)
     {
         display_menu();
-        // event("Treasure");
+        // event("EliteKorea");
     }
 }

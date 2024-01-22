@@ -2,6 +2,6 @@ RBX
 300
 __Monster__But-its-simple
 __Monster__Caught-Cheat
-2
+1
 __Monster__Quantum-Code
 3
